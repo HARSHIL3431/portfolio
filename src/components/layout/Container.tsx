@@ -11,7 +11,7 @@ export function Container({
   return (
     <div
       className={cn(
-        "w-full px-6 md:px-12 xl:px-24 mx-auto",
+        "relative w-full px-6 md:px-12 xl:px-24 mx-auto",
         className
       )}
     >

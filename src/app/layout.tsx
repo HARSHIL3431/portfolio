@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
+import { ScrollProvider } from "@/providers/ScrollProvider";
 import { FilmGrain } from "@/components/atmospheric/FilmGrain";
 import { CinematicCursor } from "@/components/interaction/CinematicCursor";
 
@@ -57,7 +58,9 @@ export default function RootLayout({
       <body className="antialiased selection:bg-cyan-glow/20 selection:text-cyan-glow bg-void text-text-primary relative overflow-x-hidden min-h-screen cursor-none">
         <FilmGrain />
         <CinematicCursor />
-        <LenisProvider>{children}</LenisProvider>
+        <LenisProvider>
+          <ScrollProvider>{children}</ScrollProvider>
+        </LenisProvider>
       </body>
     </html>
   );

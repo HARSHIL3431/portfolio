@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 export function HoverGlow({
   children,
   className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,6 +27,7 @@ export function HoverGlow({
     <div
       ref={containerRef}
       className={cn("relative overflow-hidden group", className)}
+      style={style}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

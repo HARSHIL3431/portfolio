@@ -11,7 +11,7 @@ export function NarrativeSection({
   return (
     <section
       className={cn(
-        "relative w-full py-[var(--spacing-cinematic-lg)] flex flex-col justify-center border-t border-white/5",
+        "narrative-section relative w-full py-[var(--spacing-cinematic-lg)] flex flex-col justify-center border-t border-white/5",
         className
       )}
     >
