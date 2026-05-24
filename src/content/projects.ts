@@ -1,50 +1,38 @@
-export interface Project {
-  id: string;
-  number: string;
-  title: string;
-  metric: string;
-  description: string;
-  tags: readonly string[];
-  liveUrl: string;
-  githubUrl: string;
-  image: string;
-}
-
-export const projects: Project[] = [
+export const projects = [
   {
-    id: "neural-canvas",
-    number: "01",
-    title: "Neural Canvas",
-    metric: "3× faster inference via custom WebGL shader pipeline",
-    description:
-      "A real-time generative paint system mapping high-dimensional latent space vectors to fluid visual interfaces. Built with custom WebGL shader interpolation and dynamic diffusion control.",
-    tags: ["React", "PyTorch", "WebGL"],
-    liveUrl: "https://demo.neural-canvas.ai",
-    githubUrl: "https://github.com/harshil3431/neural-canvas",
-    image: "/images/neural_canvas.png",
+    id: "01",
+    title: "Digital Expiry Tracker",
+    philosophy: "Intelligent inventory management through computer vision and OCR pipelines.",
+    tags: ["Computer Vision", "OCR", "Python", "FastAPI"],
+    status: "ACTIVE",
+    rationale: {
+      problem: "Manual expiry monitoring in retail and household environments is error-prone and inefficient.",
+      approach: "Dual OCR pipeline with image preprocessing and intelligent date extraction for real-world label recognition.",
+      result: "Automated expiry tracking system with smart reminders, inventory monitoring, and AI-assisted scanning."
+    }
   },
   {
-    id: "vision-forge",
-    number: "02",
-    title: "VisionForge AI",
-    metric: "30fps real-time inference on edge hardware",
-    description:
-      "High-performance perception engine compiling specialized vision models to WebAssembly for sub-millisecond edge deployment. Real-time frame classification without server dependency.",
-    tags: ["Rust", "WebAssembly", "ONNX"],
-    liveUrl: "https://demo.visionforge.ai",
-    githubUrl: "https://github.com/harshil3431/vision-forge",
-    image: "/images/vision_forge.png",
+    id: "02",
+    title: "Navjeevan AI",
+    philosophy: "Conversational agricultural intelligence for rural decision-making.",
+    tags: ["LLMs", "NLP", "FastAPI", "Intent Classification"],
+    status: "ACTIVE",
+    rationale: {
+      problem: "Farmers lack easy access to contextual agricultural guidance and government scheme information.",
+      approach: "LLM-powered intent classification pipeline with structured retrieval and contextual response generation.",
+      result: "AI farming assistant delivering localized, actionable agricultural guidance through conversational interaction."
+    }
   },
   {
-    id: "echomind",
-    number: "03",
-    title: "EchoMind",
-    metric: "Zero-server private inference for 10K+ users",
-    description:
-      "An autonomous AI companion running quantized language models entirely in the browser sandbox. Uses P2P weight aggregation over WebRTC — no telemetry, no servers.",
-    tags: ["Next.js", "Rust", "WebRTC"],
-    liveUrl: "https://demo.echomind.ai",
-    githubUrl: "https://github.com/harshil3431/echomind-assistant",
-    image: "/images/echomind_assistant.png",
-  },
-] as const;
+    id: "03",
+    title: "AI Stock Analysis Dashboard",
+    philosophy: "Explainable AI-assisted financial forecasting with interpretable decision support.",
+    tags: ["LSTM", "TensorFlow", "Time-Series", "Explainable AI"],
+    status: "ARCHIVED",
+    rationale: {
+      problem: "Most stock prediction systems lack interpretability and meaningful decision support.",
+      approach: "Combined LSTM forecasting with technical indicators and explainable signal reasoning.",
+      result: "Interactive financial intelligence dashboard with AI-assisted trend analysis and contextual recommendations."
+    }
+  }
+];

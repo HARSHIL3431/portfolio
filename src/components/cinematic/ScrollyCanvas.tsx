@@ -102,11 +102,11 @@ function useCanvasRenderer(imagesRef: React.MutableRefObject<HTMLImageElement[]>
 }
 
 const PHASES = [
-  { threshold: 0, headline: null, mono: "SYSTEM_INITIALIZED_" },
-  { threshold: 0.14, headline: "Architecting Intelligence", mono: "AI / ML ENGINEER" },
-  { threshold: 0.38, headline: "Designing Cognitive Systems", mono: "BUILDING HUMAN-CENTERED AI" },
-  { threshold: 0.64, headline: "Bridging Design & Engineering", mono: "WHERE VISION MEETS PRECISION" },
-  { threshold: 0.86, headline: "Enter the Archive", mono: "EXPLORE THE RESEARCH" },
+  { threshold: 0, headline: null, mono: "SYSTEM_INITIALIZED_", subtitle: "AI/ML Engineer. I build systems that learn." },
+  { threshold: 0.14, headline: "Architecting Intelligence", mono: "AI / ML ENGINEER", subtitle: "Turning complex real-world workflows into intelligent interactive experiences." },
+  { threshold: 0.38, headline: "Designing Cognitive Systems", mono: "BUILDING HUMAN-CENTERED AI", subtitle: "Where human intuition meets machine precision." },
+  { threshold: 0.64, headline: "Bridging Design & Engineering", mono: "WHERE VISION MEETS PRECISION", subtitle: "Enter the projects. The work speaks." },
+  { threshold: 0.86, headline: "Enter the Archive", mono: "EXPLORE THE RESEARCH", subtitle: "" },
 ] as const;
 
 function HeroOverlay({ phaseIndex, reduced }: { phaseIndex: number; reduced: boolean }) {
@@ -132,8 +132,7 @@ function HeroOverlay({ phaseIndex, reduced }: { phaseIndex: number; reduced: boo
 
         <div className="lg:col-span-5 flex flex-col gap-6 lg:pl-12">
           <p className="text-white/40 font-sans text-lg md:text-xl leading-relaxed max-w-md">
-            A continuous cinematic field where frames drift, sections bleed, and the archive
-            unfolds as a world instead of a stack of panels.
+            {phase.subtitle}
           </p>
           <div
             className="h-px w-full"
@@ -246,6 +245,7 @@ export function ScrollyCanvas() {
       </div>
 
       <div className="fixed inset-0 pointer-events-none z-0">
+        {/* // TODO: MANUAL FIX - right-side orange radial gradient opacity reduction (not found in file) */}
         <div
           className="absolute inset-0"
           style={{
