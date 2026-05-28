@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
 import { ParallaxLayer } from "./ParallaxLayer";
 import { HoverGlow } from "@/components/interaction/HoverGlow";
@@ -50,47 +50,43 @@ function ProjectCard({ project, className }: { project: (typeof projects)[0]; cl
             </div>
           </div>
 
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0 z-20 bg-[#050505]/95 p-8 md:p-12 flex flex-col justify-center border border-white/5"
-              >
-                <div className="font-mono text-[10px] tracking-widest uppercase text-[#8A8A8A] mb-8 border-b border-white/10 pb-4">
-                  ENGINEERING_RATIONALE
-                </div>
-                <div className="flex flex-col gap-6">
-                  <div>
-                    <span className="font-mono text-[9px] tracking-widest text-white/40 block mb-2">
-                      PROBLEM:
-                    </span>
-                    <p className="font-mono text-[11px] text-[#8A8A8A] leading-relaxed">
-                      {project.rationale.problem}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="font-mono text-[9px] tracking-widest text-white/40 block mb-2">
-                      APPROACH:
-                    </span>
-                    <p className="font-mono text-[11px] text-[#8A8A8A] leading-relaxed">
-                      {project.rationale.approach}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="font-mono text-[9px] tracking-widest text-[#00E5FF]/60 block mb-2">
-                      RESULT:
-                    </span>
-                    <p className="font-mono text-[11px] text-[#8A8A8A] leading-relaxed">
-                      {project.rationale.result}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 8 }}
+            transition={{ duration: 0.35 }}
+            style={{ pointerEvents: isHovered ? 'auto' : 'none' }}
+            className="absolute inset-0 z-20 bg-[#050505]/95 p-8 md:p-12 flex flex-col justify-center border border-white/5"
+          >
+            <div className="font-mono text-[10px] tracking-widest uppercase text-[#8A8A8A] mb-8 border-b border-white/10 pb-4">
+              ENGINEERING_RATIONALE
+            </div>
+            <div className="flex flex-col gap-6">
+              <div>
+                <span className="font-mono text-[9px] tracking-widest text-white/40 block mb-2">
+                  PROBLEM:
+                </span>
+                <p className="font-mono text-[11px] text-[#8A8A8A] leading-relaxed">
+                  {project.rationale.problem}
+                </p>
+              </div>
+              <div>
+                <span className="font-mono text-[9px] tracking-widest text-white/40 block mb-2">
+                  APPROACH:
+                </span>
+                <p className="font-mono text-[11px] text-[#8A8A8A] leading-relaxed">
+                  {project.rationale.approach}
+                </p>
+              </div>
+              <div>
+                <span className="font-mono text-[9px] tracking-widest text-[#00E5FF]/60 block mb-2">
+                  RESULT:
+                </span>
+                <p className="font-mono text-[11px] text-[#8A8A8A] leading-relaxed">
+                  {project.rationale.result}
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </HoverGlow>
     </div>
@@ -99,10 +95,12 @@ function ProjectCard({ project, className }: { project: (typeof projects)[0]; cl
 
 export default function ResearchArchive() {
   return (
-    <section id="projects" className="relative w-full py-24 md:py-32 bg-transparent z-10">
-      <ParallaxLayer speed={0.9}>
+    <section id="projects" className="relative w-full py-16 md:py-24 bg-transparent z-10" style={{
+      background: 'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.85) 6%, rgba(5,5,5,0.85) 94%, rgba(5,5,5,0) 100%)'
+    }}>
+      <ParallaxLayer speed={0.95}>
         <Container className="max-w-7xl px-6 md:px-12 xl:px-24">
-          <div className="flex flex-col gap-16 md:gap-24">
+          <div className="flex flex-col gap-12 md:gap-16">
             <div className="font-mono text-[10px] tracking-widest text-[#8A8A8A] uppercase">
               /// 03 / PROJECTS
             </div>

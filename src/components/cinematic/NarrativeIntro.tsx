@@ -6,8 +6,10 @@ import { FadeIn } from "@/motion/FadeIn";
 
 export default function NarrativeIntro() {
   return (
-    <section id="about" className="relative w-full min-h-screen flex flex-col justify-center bg-transparent py-32 z-10">
-      <ParallaxLayer speed={0.7}>
+    <section id="about" className="relative w-full min-h-screen flex flex-col justify-center bg-transparent py-32 z-10" style={{
+      background: 'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.94) 6%, rgba(5,5,5,0.94) 94%, rgba(5,5,5,0) 100%)'
+    }}>
+      <ParallaxLayer speed={0.92}>
         <Container className="max-w-7xl px-6 md:px-12 xl:px-24">
           <div className="flex flex-col gap-16 md:gap-24">
             <FadeIn>

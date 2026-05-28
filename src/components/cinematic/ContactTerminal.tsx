@@ -68,7 +68,9 @@ export default function ContactTerminal() {
   const [isVisible, setIsVisible] = useState(true); // For simplicity, trigger on mount or use InView
 
   return (
-    <section id="contact" className="relative w-full min-h-screen flex flex-col justify-center bg-transparent z-10 py-32">
+    <section id="contact" className="relative w-full min-h-screen flex flex-col justify-center bg-transparent z-10 py-32" style={{
+      background: 'linear-gradient(to bottom, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0.97) 2%, rgba(5,5,5,0.99) 10%, rgba(5,5,5,1) 100%)'
+    }}>
       <Container className="max-w-4xl px-6 md:px-12 xl:px-24">
         <div className="flex flex-col gap-16 md:gap-24 w-full">
           <FadeIn>
@@ -78,13 +80,13 @@ export default function ContactTerminal() {
           </FadeIn>
 
           <div className="flex flex-col gap-12">
-            <FadeIn delay={0.1}>
+            <FadeIn delay={0.1} viewportMargin="0px">
               <h2 className="font-heading text-6xl md:text-7xl leading-none text-[#F5F5F5]">
                 Let's Build Something
               </h2>
             </FadeIn>
 
-            <FadeIn delay={0.2}>
+            <FadeIn delay={0.2} viewportMargin="0px">
               <div className="border border-white/5 p-6 font-mono text-xs space-y-2 bg-[#050505]/40 backdrop-blur-sm max-w-xl">
                 {TERMINAL_LINES.map((line, index) => (
                   <TerminalLine key={index} line={line} show={isVisible} />
@@ -96,7 +98,7 @@ export default function ContactTerminal() {
               </div>
             </FadeIn>
 
-            <FadeIn delay={0.3}>
+            <FadeIn delay={0.3} viewportMargin="0px">
               <form className="flex flex-col gap-8 w-full mt-8">
                 <div className="flex flex-col gap-2">
                   <label className="font-mono text-[10px] tracking-widest text-[#8A8A8A] uppercase">
@@ -147,7 +149,7 @@ export default function ContactTerminal() {
             </FadeIn>
           </div>
 
-          <FadeIn delay={0.4}>
+          <FadeIn delay={0.4} viewportMargin="0px">
             <div className="flex flex-wrap gap-8 pt-16 mt-8 border-t border-white/5">
               {["GITHUB", "LINKEDIN", "TWITTER", "RESEARCH"].map((link) => (
                 <a

@@ -4,7 +4,7 @@ import NarrativeIntro from '@/components/cinematic/NarrativeIntro'
 import TechStack from '@/components/cinematic/TechStack'
 import ResearchArchive from '@/components/cinematic/ResearchArchive'
 import ExperienceTimeline from '@/components/cinematic/ExperienceTimeline'
-import CertificationsGrid from '@/components/cinematic/CertificationsGrid'
+// import CertificationsGrid from '@/components/cinematic/CertificationsGrid'
 import ContactTerminal from '@/components/cinematic/ContactTerminal'
 
 export default function Page() {
@@ -17,7 +17,8 @@ export default function Page() {
         <TechStack />
         <ResearchArchive />
         <ExperienceTimeline />
-        <CertificationsGrid />
+        {/* Certifications Grid temporarily disabled */}
+        {/* <CertificationsGrid /> */}
         <ContactTerminal />
       </main>
     </>

@@ -9,8 +9,8 @@ export const experience = [
   {
     type: "education",
     role: "B.Tech — Artificial Intelligence & Machine Learning",
-    org: "// TODO: ADD INSTITUTION NAME",
+    org: "Institute of Technology",
     period: "2024 — 2028",
-    description: "Specialization in intelligent systems, computer vision, and human-centered AI design."
+    description: "Specialization in intelligent systems, computer vision, and AI design."
   }
 ];

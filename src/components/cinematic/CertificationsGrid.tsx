@@ -7,8 +7,10 @@ import { certifications } from "@/content/certifications";
 
 export default function CertificationsGrid() {
   return (
-    <section className="relative w-full py-24 md:py-32 bg-transparent z-10">
-      <ParallaxLayer speed={0.88}>
+    <section className="relative w-full py-24 md:py-32 bg-transparent z-10" style={{
+      background: 'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.94) 6%, rgba(5,5,5,0.94) 94%, rgba(5,5,5,0) 100%)'
+    }}>
+      <ParallaxLayer speed={0.95}>
         <Container className="max-w-7xl px-6 md:px-12 xl:px-24">
           <div className="flex flex-col gap-16 md:gap-24">
             <FadeIn>

@@ -9,6 +9,7 @@ interface FadeInProps {
   delay?: number;
   className?: string;
   direction?: "up" | "down" | "left" | "right" | "none";
+  viewportMargin?: string;
 }
 
 export function FadeIn({
@@ -16,6 +17,7 @@ export function FadeIn({
   delay = 0,
   className,
   direction = "up",
+  viewportMargin = "-10%",
 }: FadeInProps) {
   const shouldReduceMotion = useReducedMotion();
 
@@ -45,7 +47,7 @@ export function FadeIn({
         y: 0,
         filter: finalFilter,
       }}
-      viewport={{ once: true, margin: "-10%" }}
+      viewport={{ once: true, margin: viewportMargin as any }}
       transition={{
         duration,
         delay,

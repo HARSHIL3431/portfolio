@@ -58,8 +58,10 @@ export default function ExperienceTimeline() {
   const lineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <section className="relative w-full py-24 md:py-32 bg-transparent z-10">
-      <ParallaxLayer speed={0.9}>
+    <section className="relative w-full py-24 md:py-32 bg-transparent z-10" style={{
+      background: 'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.94) 6%, rgba(5,5,5,0.94) 94%, rgba(5,5,5,0) 100%)'
+    }}>
+      <ParallaxLayer speed={0.96}>
         <Container className="max-w-7xl px-6 md:px-12 xl:px-24">
           <div ref={containerRef} className="flex flex-col gap-16 md:gap-24">
             <div className="font-mono text-[10px] tracking-widest text-[#8A8A8A] uppercase">

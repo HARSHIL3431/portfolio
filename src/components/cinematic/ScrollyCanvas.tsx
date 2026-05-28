@@ -103,10 +103,10 @@ function useCanvasRenderer(imagesRef: React.MutableRefObject<HTMLImageElement[]>
 
 const PHASES = [
   { threshold: 0, headline: null, mono: "SYSTEM_INITIALIZED_", subtitle: "AI/ML Engineer. I build systems that learn." },
-  { threshold: 0.14, headline: "Architecting Intelligence", mono: "AI / ML ENGINEER", subtitle: "Turning complex real-world workflows into intelligent interactive experiences." },
-  { threshold: 0.38, headline: "Designing Cognitive Systems", mono: "BUILDING HUMAN-CENTERED AI", subtitle: "Where human intuition meets machine precision." },
-  { threshold: 0.64, headline: "Bridging Design & Engineering", mono: "WHERE VISION MEETS PRECISION", subtitle: "Enter the projects. The work speaks." },
-  { threshold: 0.86, headline: "Enter the Archive", mono: "EXPLORE THE RESEARCH", subtitle: "" },
+  { threshold: 0.10, headline: "Architecting Intelligence", mono: "AI / ML ENGINEER", subtitle: "Turning complex real-world workflows into intelligent interactive experiences." },
+  { threshold: 0.22, headline: "Designing Cognitive Systems", mono: "", subtitle: "Where human intuition meets machine precision." },
+  { threshold: 0.35, headline: "Bridging Design & Engineering", mono: "WHERE VISION MEETS PRECISION", subtitle: "Enter the projects. The work speaks." },
+  { threshold: 0.45, headline: "Enter the Archive", mono: "EXPLORE THE RESEARCH", subtitle: "" },
 ] as const;
 
 function HeroOverlay({ phaseIndex, reduced }: { phaseIndex: number; reduced: boolean }) {
@@ -141,11 +141,6 @@ function HeroOverlay({ phaseIndex, reduced }: { phaseIndex: number; reduced: boo
                 "linear-gradient(to right, rgba(255,255,255,0.12), rgba(255,255,255,0.04), transparent)",
             }}
           />
-          <div className="flex flex-wrap gap-3 font-mono text-[9px] tracking-[0.35em] uppercase text-white/18">
-            <span>Parallax depth</span>
-            <span>Cinematic scroll</span>
-            <span>{reduced ? "Reduced motion" : "Breathing frame drift"}</span>
-          </div>
         </div>
       </div>
     </Container>
@@ -165,8 +160,12 @@ export function ScrollyCanvas() {
 
   const canvasY = useTransform(scrollYProgress, [0, 1], ["0%", "-8%"]);
   const canvasScale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.04, 1.08]);
-  const canvasOpacity = useTransform(scrollYProgress, [0.85, 1], [1, 0]);
-  const overlayOpacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
+  const canvasOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.35, 0.55, 0.75],
+    [1, 1, 0.3, 0]
+  );
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.05, 0.35, 0.45], [0, 1, 1, 0]);
   const overlayY = useTransform(scrollYProgress, [0, 1], ["1%", "-6%"]);
 
   useEffect(() => {
@@ -245,7 +244,7 @@ export function ScrollyCanvas() {
       </div>
 
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* // TODO: MANUAL FIX - right-side orange radial gradient opacity reduction (not found in file) */}
+        {/* Right-side radial gradient */}
         <div
           className="absolute inset-0"
           style={{
