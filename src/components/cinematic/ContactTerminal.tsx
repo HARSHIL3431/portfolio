@@ -1,169 +1,287 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
-import { FadeIn } from "@/motion/FadeIn";
 
 const TERMINAL_LINES = [
-  { delay: 0.2, text: "> ESTABLISHING_SECURE_CONNECTION...", color: "text-[#8A8A8A]" },
-  { delay: 0.6, text: "> HANDSHAKE_COMPLETE", color: "text-[#00E5FF]/80" },
-  { delay: 1.0, text: "> AWAITING_INPUT", color: "text-[#8A8A8A]" },
-  { delay: 1.4, text: "", color: "" },
-  { delay: 1.6, text: "> CONTACT.PROTOCOL / v2.4.1", color: "text-[#00E5FF]/60" },
+  { text: "> ESTABLISHING_SECURE_CONNECTION...", color: "rgba(138,138,138,0.8)" },
+  { text: "> HANDSHAKE_COMPLETE", color: "rgba(0,229,255,0.7)" },
+  { text: "> AWAITING_INPUT", color: "rgba(138,138,138,0.6)" },
+  { text: "", color: "" },
+  { text: "> CONTACT.PROTOCOL / v2.4.1", color: "rgba(0,229,255,0.5)" },
 ];
 
-function useTypewriter(text: string, speed = 30, start = false) {
-  const [displayed, setDisplayed] = useState("");
-
-  useEffect(() => {
-    if (!start) {
-      setDisplayed("");
-      return;
-    }
-    let index = 0;
-    const timer = window.setInterval(() => {
-      setDisplayed((current) => current + text.charAt(index));
-      index += 1;
-      if (index >= text.length) {
-        window.clearInterval(timer);
-      }
-    }, speed);
-    return () => window.clearInterval(timer);
-  }, [text, speed, start]);
-
-  return displayed;
-}
-
-function TerminalLine({ line, show }: { line: (typeof TERMINAL_LINES)[0]; show: boolean }) {
-  const [visible, setVisible] = useState(false);
-  const [startTyping, setStartTyping] = useState(false);
-
-  useEffect(() => {
-    if (!show) {
-      setVisible(false);
-      setStartTyping(false);
-      return;
-    }
-    const timeout = window.setTimeout(() => {
-      setVisible(true);
-      setStartTyping(true);
-    }, line.delay * 1000);
-    return () => window.clearTimeout(timeout);
-  }, [show, line.delay]);
-
-  if (!line.text) return <div className="h-4" />;
-
-  const typed = useTypewriter(line.text, 24, startTyping);
-  const done = typed.length >= line.text.length;
-
+function TerminalOutput({ lines, revealed }: { lines: typeof TERMINAL_LINES; revealed: number }) {
   return (
-    <p className={`font-mono text-xs tracking-wider ${line.color} ${visible ? "opacity-100" : "opacity-0"}`}>
-      {typed}
-      <span className={`ml-1 ${done ? "opacity-0" : "animate-pulse"}`}>|</span>
-    </p>
+    <div className="flex flex-col gap-1">
+      {lines.map((line, i) => (
+        <p
+          key={i}
+          className="font-mono text-xs tracking-wider transition-opacity duration-300"
+          style={{ opacity: i < revealed ? 1 : 0, color: line.color }}
+        >
+          {line.text || "\u00A0"}
+        </p>
+      ))}
+      {revealed >= lines.length && (
+        <div className="flex items-center gap-2 mt-1">
+          <span style={{ color: "rgba(0,229,255,0.5)" }}>&gt; _</span>
+          <span className="w-2 h-4 inline-block" style={{ background: "rgba(0,229,255,0.35)", animation: "blink 1s steps(2,start) infinite" }} />
+        </div>
+      )}
+    </div>
   );
 }
 
 export default function ContactTerminal() {
-  const [isVisible, setIsVisible] = useState(true); // For simplicity, trigger on mount or use InView
+  const sectionRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const linksRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const [terminalLines, setTerminalLines] = useState(0);
+  const shouldReduceMotion = useReducedMotion() ?? false;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (shouldReduceMotion) {
+      setTerminalLines(TERMINAL_LINES.length);
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let ctx: any = null;
+
+    const init = async () => {
+      const { gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
+
+      const trigger = sectionRef.current;
+      if (!trigger) return;
+
+      ctx = gsap.context(() => {
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger,
+            start: "top top",
+            end: `+=${trigger.offsetHeight - window.innerHeight}`,
+            scrub: 1.4,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              // Reveal terminal lines progressively
+              const lineCount = Math.floor(self.progress * TERMINAL_LINES.length * 1.8);
+              setTerminalLines(Math.min(lineCount, TERMINAL_LINES.length + 1));
+            },
+          },
+        });
+
+        // Fade in scene
+        tl.fromTo(stickyRef.current, { opacity: 0 }, { opacity: 1, duration: 0.2 }, 0);
+
+        // Ambient glow
+        tl.fromTo(
+          glowRef.current,
+          { opacity: 0, scale: 0.8 },
+          { opacity: 1, scale: 1, duration: 0.4 },
+          0.05
+        );
+
+        // Headline sweeps in
+        tl.fromTo(
+          headlineRef.current,
+          { opacity: 0, y: 40, filter: "blur(8px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3 },
+          0.1
+        );
+
+        // Terminal block
+        tl.fromTo(
+          terminalRef.current,
+          { opacity: 0, x: -20 },
+          { opacity: 1, x: 0, duration: 0.25 },
+          0.3
+        );
+
+        // Form
+        tl.fromTo(
+          formRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.3 },
+          0.45
+        );
+
+        // Footer links
+        tl.fromTo(
+          linksRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.2 },
+          0.65
+        );
+      });
+    };
+
+    init();
+    return () => ctx?.revert();
+  }, [shouldReduceMotion]);
+
+  const baseStyle = shouldReduceMotion ? {} : { opacity: 0 };
 
   return (
-    <section id="contact" className="relative w-full min-h-screen flex flex-col justify-center bg-transparent z-10 py-32" style={{
-      background: 'linear-gradient(to bottom, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0.97) 2%, rgba(5,5,5,0.99) 10%, rgba(5,5,5,1) 100%)'
-    }}>
-      <Container className="max-w-4xl px-6 md:px-12 xl:px-24">
-        <div className="flex flex-col gap-16 md:gap-24 w-full">
-          <FadeIn>
-            <div className="font-mono text-[10px] tracking-widest text-[#8A8A8A] uppercase">
+    <section
+      id="contact"
+      ref={sectionRef}
+      className="relative"
+      style={{ height: "260vh" }}
+    >
+      <div
+        ref={stickyRef}
+        className="sticky top-0 h-screen overflow-hidden w-full flex flex-col justify-center"
+        style={baseStyle}
+      >
+        {/* Atmospheric glow */}
+        <div
+          ref={glowRef}
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: "radial-gradient(ellipse 60% 70% at 50% 60%, rgba(0,229,255,0.05) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-40"
+          style={{ background: "linear-gradient(to bottom, #050505, transparent)" }}
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-32"
+          style={{ background: "linear-gradient(to top, #050505, transparent)" }}
+        />
+
+        <Container className="max-w-4xl px-6 md:px-12 xl:px-24 relative z-10">
+          <div className="flex flex-col gap-12 w-full">
+            <div className="font-mono text-[10px] tracking-widest text-white/20 uppercase">
               /// 06 / ESTABLISH CONNECTION
             </div>
-          </FadeIn>
 
-          <div className="flex flex-col gap-12">
-            <FadeIn delay={0.1} viewportMargin="0px">
-              <h2 className="font-heading text-6xl md:text-7xl leading-none text-[#F5F5F5]">
-                Let's Build Something
-              </h2>
-            </FadeIn>
+            <h2
+              ref={headlineRef}
+              className="font-heading text-6xl md:text-7xl leading-none text-white"
+              style={{ opacity: shouldReduceMotion ? 1 : 0 }}
+            >
+              Let&apos;s Build<br />
+              <span className="italic opacity-70">Something</span>
+            </h2>
 
-            <FadeIn delay={0.2} viewportMargin="0px">
-              <div className="border border-white/5 p-6 font-mono text-xs space-y-2 bg-[#050505]/40 backdrop-blur-sm max-w-xl">
-                {TERMINAL_LINES.map((line, index) => (
-                  <TerminalLine key={index} line={line} show={isVisible} />
-                ))}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[#00E5FF]/60">&gt; _</span>
-                  <span className="w-2 h-4 bg-[#00E5FF]/40 animate-pulse" />
-                </div>
+            <div className="flex flex-col gap-10">
+              {/* Terminal block */}
+              <div
+                ref={terminalRef}
+                className="border border-white/5 p-5 max-w-lg"
+                style={{
+                  background: "rgba(5,5,5,0.6)",
+                  backdropFilter: "blur(8px)",
+                  opacity: shouldReduceMotion ? 1 : 0,
+                }}
+              >
+                <TerminalOutput lines={TERMINAL_LINES} revealed={terminalLines} />
               </div>
-            </FadeIn>
 
-            <FadeIn delay={0.3} viewportMargin="0px">
-              <form className="flex flex-col gap-8 w-full mt-8">
-                <div className="flex flex-col gap-2">
-                  <label className="font-mono text-[10px] tracking-widest text-[#8A8A8A] uppercase">
-                    NAME
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full bg-transparent border-b border-white/10 py-4 font-sans text-base text-[#F5F5F5] outline-none focus:border-white/30 transition-colors"
-                  />
-                </div>
+              {/* Contact form */}
+              <form
+                ref={formRef}
+                className="flex flex-col gap-7 w-full max-w-xl"
+                style={{ opacity: shouldReduceMotion ? 1 : 0 }}
+                onSubmit={(e) => e.preventDefault()}
+              >
+                {[
+                  { label: "NAME", type: "text", id: "contact-name" },
+                  { label: "SIGNAL ADDRESS / EMAIL", type: "email", id: "contact-email" },
+                ].map(({ label, type, id }) => (
+                  <div key={id} className="flex flex-col gap-2">
+                    <label
+                      htmlFor={id}
+                      className="font-mono text-[10px] tracking-widest text-white/30 uppercase"
+                    >
+                      {label}
+                    </label>
+                    <input
+                      id={id}
+                      type={type}
+                      className="w-full bg-transparent border-b py-3 font-sans text-base text-white outline-none transition-colors"
+                      style={{ borderColor: "rgba(255,255,255,0.08)" }}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,229,255,0.3)")}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)")}
+                    />
+                  </div>
+                ))}
 
                 <div className="flex flex-col gap-2">
-                  <label className="font-mono text-[10px] tracking-widest text-[#8A8A8A] uppercase">
-                    SIGNAL ADDRESS / EMAIL
-                  </label>
-                  <input
-                    type="email"
-                    className="w-full bg-transparent border-b border-white/10 py-4 font-sans text-base text-[#F5F5F5] outline-none focus:border-white/30 transition-colors"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="font-mono text-[10px] tracking-widest text-[#8A8A8A] uppercase">
+                  <label
+                    htmlFor="contact-message"
+                    className="font-mono text-[10px] tracking-widest text-white/30 uppercase"
+                  >
                     TRANSMISSION / MESSAGE
                   </label>
                   <textarea
-                    rows={1}
-                    className="w-full bg-transparent border-b border-white/10 py-4 font-sans text-base text-[#F5F5F5] outline-none focus:border-white/30 transition-colors resize-none"
+                    id="contact-message"
+                    rows={3}
+                    className="w-full bg-transparent border-b py-3 font-sans text-base text-white outline-none transition-colors resize-none"
+                    style={{ borderColor: "rgba(255,255,255,0.08)" }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(0,229,255,0.3)")}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)")}
                   />
                 </div>
 
                 <button
-                  type="button"
-                  className="w-full py-6 mt-8 border border-[#00E5FF]/30 text-white font-mono text-xs tracking-widest uppercase transition-all duration-300 hover:border-[#00E5FF]/60"
-                  style={{
-                    boxShadow: "0 0 0 rgba(0,229,255,0)",
-                  }}
+                  id="contact-submit"
+                  type="submit"
+                  className="w-full py-5 mt-4 font-mono text-xs tracking-widest uppercase relative overflow-hidden group"
+                  style={{ border: "1px solid rgba(0,229,255,0.2)", color: "#fff" }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = "0 0 20px rgba(0,229,255,0.08)";
+                    e.currentTarget.style.borderColor = "rgba(0,229,255,0.5)";
+                    e.currentTarget.style.boxShadow = "0 0 24px rgba(0,229,255,0.08)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "0 0 0 rgba(0,229,255,0)";
+                    e.currentTarget.style.borderColor = "rgba(0,229,255,0.2)";
+                    e.currentTarget.style.boxShadow = "none";
                   }}
                 >
-                  INITIATE_COMMUNICATION →
+                  <span className="relative z-10">INITIATE_COMMUNICATION →</span>
+                  {/* Scan line hover effect */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: "linear-gradient(to right, rgba(0,229,255,0.03), transparent)" }}
+                  />
                 </button>
               </form>
-            </FadeIn>
-          </div>
 
-          <FadeIn delay={0.4} viewportMargin="0px">
-            <div className="flex flex-wrap gap-8 pt-16 mt-8 border-t border-white/5">
-              {["GITHUB", "LINKEDIN", "TWITTER", "RESEARCH"].map((link) => (
-                <a
-                  key={link}
-                  href="#"
-                  className="font-mono text-[10px] tracking-widest text-[#8A8A8A] hover:text-white transition-colors"
-                >
-                  {link}
-                </a>
-              ))}
+              {/* Social links */}
+              <div
+                ref={linksRef}
+                className="flex flex-wrap gap-8 pt-8 border-t border-white/5"
+                style={{ opacity: shouldReduceMotion ? 1 : 0 }}
+              >
+                {[
+                  { label: "GITHUB", href: "#" },
+                  { label: "LINKEDIN", href: "#" },
+                  { label: "TWITTER", href: "#" },
+                  { label: "RESEARCH", href: "#" },
+                ].map(({ label, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    className="font-mono text-[10px] tracking-widest text-white/25 transition-colors duration-300 hover:text-cyan-glow"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
             </div>
-          </FadeIn>
-        </div>
-      </Container>
+          </div>
+        </Container>
+      </div>
     </section>
   );
 }

@@ -27,6 +27,7 @@
 }
 
 html {
+  /* scroll-behavior is handled by Lenis — keep this as auto */
   scroll-behavior: auto;
 }
 
@@ -38,10 +39,15 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
 }
 
-section {
-  isolation: isolate;
+/* GPU compositing hints for animated layers */
+.cinematic-scene-sticky {
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .parallax-layer {
@@ -49,8 +55,26 @@ section {
 }
 
 ::selection {
-  background-color: rgba(0,229,255,0.2);
+  background-color: rgba(0, 229, 255, 0.2);
   color: var(--color-cyan-glow);
+}
+
+/* ─── Cinematic keyframes ─────────────────────────────── */
+
+@keyframes heroFloat {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-12px); }
+}
+
+@keyframes blink {
+  0%   { opacity: 1; }
+  50%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes scanDown {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(100vh); }
 }
 
 @keyframes fadeSlideUp {
@@ -66,45 +90,51 @@ section {
   }
 }
 
-/* Cinematic scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #0A0A0C;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(0,229,255,0.4);
-  border-radius: 999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,229,255,0.55);
+@keyframes scrollHintPulse {
+  0%, 100% { opacity: 0.2; height: 12px; }
+  50%       { opacity: 0.6; height: 24px; }
 }
 
-/* Blink animation used for terminal cursor */
-@keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
-  100% { opacity: 1; }
-}
+/* ─── Utility classes ─────────────────────────────────── */
 
 .animate-blink {
   animation: blink 1s steps(2, start) infinite;
 }
 
-/* NarrativeSection hairline */
-.narrative-section {
-  position: relative;
-}
-.narrative-section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
-  pointer-events: none;
+.scroll-hint-line {
+  animation: scrollHintPulse 2s ease-in-out infinite;
 }
 
+/* ─── Cinematic scrollbar ─────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0C;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.25);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 229, 255, 0.4);
+}
+
+/* ─── Accessibility: reduced motion ───────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
