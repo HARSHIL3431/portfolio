@@ -1,32 +1,76 @@
 "use client";
 
 import { useMousePosition } from "@/hooks/useMousePosition";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
+/**
+ * CinematicCursor — dual-ring cursor with spring physics.
+ *
+ * Default: small dot (6px) + larger trailing ring (28px)
+ * Uses transform only — no repaints.
+ * Hidden on touch devices and for reduced-motion users.
+ */
 export function CinematicCursor() {
   const { x, y } = useMousePosition();
   const [isVisible, setIsVisible] = useState(false);
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   useEffect(() => {
-    setIsVisible(true);
-  }, []);
+    // Hide on touch devices
+    const isTouchDevice =
+      typeof window !== "undefined" &&
+      ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+    if (!isTouchDevice && !shouldReduceMotion) {
+      setIsVisible(true);
+    }
+  }, [shouldReduceMotion]);
 
   if (!isVisible) return null;
 
   return (
-    <motion.div
-      className="pointer-events-none fixed left-0 top-0 z-50 h-4 w-4 rounded-full border-[0.25px] border-white/20 bg-white/5 mix-blend-screen backdrop-blur-sm"
-      animate={{
-        x: x - 8,
-        y: y - 8,
-      }}
-      transition={{
-        type: "spring",
-        stiffness: 100,
-        damping: 30,
-        mass: 0.8,
-      }}
-    />
+    <>
+      {/* Inner dot — follows closely */}
+      <motion.div
+        className="pointer-events-none fixed left-0 top-0 z-50 rounded-full"
+        style={{
+          width: 6,
+          height: 6,
+          background: "rgba(255, 255, 255, 0.6)",
+          mixBlendMode: "difference",
+        }}
+        animate={{
+          x: x - 3,
+          y: y - 3,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 28,
+          mass: 0.5,
+        }}
+      />
+      {/* Outer ring — trails behind with softer physics */}
+      <motion.div
+        className="pointer-events-none fixed left-0 top-0 z-50 rounded-full"
+        style={{
+          width: 28,
+          height: 28,
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          background: "transparent",
+          mixBlendMode: "difference",
+        }}
+        animate={{
+          x: x - 14,
+          y: y - 14,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 80,
+          damping: 25,
+          mass: 1,
+        }}
+      />
+    </>
   );
 }

@@ -1,24 +1,60 @@
 @import "tailwindcss";
 
 @theme {
+  /* ─── Color System ─────────────────────────────────────
+   * Blue/Orange cinematic grading — reduced glow ~30%,
+   * more neutral dark space, strategic contrast only.
+   */
   --color-void: #050505;
   --color-obsidian: #0a0a0c;
+  --color-ink: #0D0D10;
   --color-carbon: rgba(20, 20, 22, 0.4);
+  --color-smoke: rgba(255, 255, 255, 0.03);
   --color-surface-border: rgba(255, 255, 255, 0.05);
-  --color-cyan-glow: #00E5FF;
-  --color-cyan-glow-ambient: rgba(0, 229, 255, 0.15);
-  --color-text-primary: #FFFFFF;
+
+  /* Primary accent — cooled cyan, less intensity */
+  --color-cyan-glow: #00D4F0;
+  --color-cyan-glow-ambient: rgba(0, 212, 240, 0.10);
+  --color-cyan-subtle: rgba(0, 212, 240, 0.06);
+
+  /* Warm accent — cinematic amber */
+  --color-amber-glow: #E8A87C;
+  --color-amber-ambient: rgba(232, 168, 124, 0.08);
+
+  /* Violet accent — for project 3 */
+  --color-violet-glow: #B464FF;
+  --color-violet-ambient: rgba(180, 100, 255, 0.08);
+
+  /* Text hierarchy */
+  --color-text-primary: #F0F0F2;
   --color-text-secondary: #8A8A93;
   --color-text-metadata: #5A5A62;
+  --color-text-ghost: rgba(255, 255, 255, 0.15);
 
+  /* ─── Spacing Rhythm ────────────────────────────────── */
   --spacing-cinematic-sm: 10vh;
   --spacing-cinematic-md: 15vh;
   --spacing-cinematic-lg: 25vh;
+  --spacing-cinematic-xl: 35vh;
+  --spacing-breath: 8vh;
 
+  /* ─── Typography ────────────────────────────────────── */
   --font-heading: var(--font-playfair);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 }
+
+/* ─── Z-Index Layering System ─────────────────────────
+ * z-bg:          0  — backgrounds, canvases
+ * z-atmosphere:  1  — fog, gradients
+ * z-particles:   2  — dust, floating particles
+ * z-depth:       3  — depth layer elements
+ * z-portrait:    5  — portrait / hero canvas
+ * z-content:    10  — main content
+ * z-foreground: 20  — overlays, film grain
+ * z-cursor:     50  — custom cursor
+ * z-nav:        60  — navigation
+ */
 
 :root {
   background-color: var(--color-void);
@@ -27,7 +63,6 @@
 }
 
 html {
-  /* scroll-behavior is handled by Lenis — keep this as auto */
   scroll-behavior: auto;
 }
 
@@ -42,7 +77,8 @@ body {
   overscroll-behavior: none;
 }
 
-/* GPU compositing hints for animated layers */
+/* ─── GPU compositing hints ───────────────────────────── */
+
 .cinematic-scene-sticky {
   will-change: opacity, transform;
   backface-visibility: hidden;
@@ -54,27 +90,24 @@ body {
   will-change: transform;
 }
 
+/* ─── Selection ───────────────────────────────────────── */
+
 ::selection {
-  background-color: rgba(0, 229, 255, 0.2);
+  background-color: rgba(0, 212, 240, 0.15);
   color: var(--color-cyan-glow);
 }
 
-/* ─── Cinematic keyframes ─────────────────────────────── */
+/* ─── Cinematic Keyframes ─────────────────────────────── */
 
 @keyframes heroFloat {
   from { transform: translateY(0px); }
-  to   { transform: translateY(-12px); }
+  to   { transform: translateY(-10px); }
 }
 
 @keyframes blink {
   0%   { opacity: 1; }
   50%  { opacity: 0; }
   100% { opacity: 1; }
-}
-
-@keyframes scanDown {
-  from { transform: translateY(-100%); }
-  to   { transform: translateY(100vh); }
 }
 
 @keyframes fadeSlideUp {
@@ -91,21 +124,72 @@ body {
 }
 
 @keyframes scrollHintPulse {
-  0%, 100% { opacity: 0.2; height: 12px; }
-  50%       { opacity: 0.6; height: 24px; }
+  0%, 100% { opacity: 0.15; height: 12px; }
+  50%       { opacity: 0.4; height: 20px; }
 }
 
-/* ─── Utility classes ─────────────────────────────────── */
+/* Atmospheric: slow camera-like drift */
+@keyframes subtleDrift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(1.5%, -0.8%) scale(1.01); }
+  66%  { transform: translate(-0.8%, 1.2%) scale(1.005); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Atmospheric: breathing glow pulse */
+@keyframes atmosphericPulse {
+  0%, 100% { opacity: 0.03; }
+  50%       { opacity: 0.06; }
+}
+
+/* Scene breath: subtle separator fade */
+@keyframes breathFade {
+  0%, 100% { opacity: 0.02; }
+  50%       { opacity: 0.05; }
+}
+
+/* Connection line draw */
+@keyframes lineGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ─── Utility Classes ─────────────────────────────────── */
 
 .animate-blink {
   animation: blink 1s steps(2, start) infinite;
 }
 
 .scroll-hint-line {
-  animation: scrollHintPulse 2s ease-in-out infinite;
+  animation: scrollHintPulse 2.5s ease-in-out infinite;
 }
 
-/* ─── Cinematic scrollbar ─────────────────────────────── */
+.animate-drift {
+  animation: subtleDrift 30s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: atmosphericPulse 8s ease-in-out infinite;
+}
+
+/* Physical-feeling hover lift */
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
+              box-shadow 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Depth-shift transition class */
+.depth-shift {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Cinematic Scrollbar ─────────────────────────────── */
 
 ::-webkit-scrollbar {
   width: 2px;
@@ -117,15 +201,22 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 229, 255, 0.25);
+  background: rgba(0, 212, 240, 0.20);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 229, 255, 0.4);
+  background: rgba(0, 212, 240, 0.35);
 }
 
-/* ─── Accessibility: reduced motion ───────────────────── */
+/* ─── Focus States (Accessibility) ────────────────────── */
+
+:focus-visible {
+  outline: 1px solid rgba(0, 212, 240, 0.5);
+  outline-offset: 2px;
+}
+
+/* ─── Reduced Motion ──────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -136,5 +227,11 @@ body {
 
   html {
     scroll-behavior: auto;
+  }
+
+  .animate-drift,
+  .animate-breathe,
+  .scroll-hint-line {
+    animation: none !important;
   }
 }

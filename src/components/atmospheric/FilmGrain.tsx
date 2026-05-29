@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useReducedMotion } from "framer-motion";
 
 /**
- * Animated film grain overlay drawn on a canvas.
+ * Film grain overlay — optimized.
  * Uses requestAnimationFrame for living-noise feel.
- * Opacity is very low to stay atmospheric without distraction.
+ * Reduced alpha for a subtler, more premium effect.
+ * Respects reduced-motion preferences.
  */
 export function FilmGrain() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   useEffect(() => {
+    if (shouldReduceMotion) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -19,8 +24,9 @@ export function FilmGrain() {
     if (!ctx) return;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Use a smaller canvas for performance, stretched via CSS
+      canvas.width = Math.ceil(window.innerWidth / 2);
+      canvas.height = Math.ceil(window.innerHeight / 2);
     };
     resize();
     window.addEventListener("resize", resize);
@@ -41,7 +47,7 @@ export function FilmGrain() {
           data[i] = grain;
           data[i + 1] = grain;
           data[i + 2] = grain;
-          data[i + 3] = Math.random() * 18; // very low alpha
+          data[i + 3] = Math.random() * 12; // reduced alpha
         }
 
         ctx.putImageData(imageData, 0, 0);
@@ -56,12 +62,15 @@ export function FilmGrain() {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [shouldReduceMotion]);
+
+  if (shouldReduceMotion) return null;
 
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-30 h-full w-full mix-blend-screen"
+      className="pointer-events-none fixed inset-0 z-[20] h-full w-full mix-blend-screen"
+      style={{ width: "100vw", height: "100vh" }}
       aria-hidden="true"
     />
   );
