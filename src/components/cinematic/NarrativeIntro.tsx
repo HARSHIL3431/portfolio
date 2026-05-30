@@ -123,7 +123,10 @@ export default function NarrativeIntro() {
       id="about"
       ref={sectionRef}
       className="relative"
-      style={{ height: "300vh" }}
+      style={{
+        height: "300vh",
+        background: 'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.96) 3%, rgba(5,5,5,0.96) 97%, rgba(5,5,5,0) 100%)',
+      }}
     >
       <div
         ref={stickyRef}

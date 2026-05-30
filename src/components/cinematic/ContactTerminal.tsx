@@ -162,7 +162,10 @@ export default function ContactTerminal() {
       id="contact"
       ref={sectionRef}
       className="relative"
-      style={{ height: "260vh" }}
+      style={{
+        height: "260vh",
+        background: 'linear-gradient(to bottom, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.97) 2%, rgba(5,5,5,0.97) 100%)',
+      }}
     >
       <div
         ref={stickyRef}

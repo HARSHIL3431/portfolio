@@ -82,12 +82,14 @@ export default function MinimalNav() {
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           {/* Identity mark */}
           <div className="flex items-center gap-3">
-            <div
+            <motion.div
               className="w-1.5 h-1.5 rounded-full"
               style={{
                 background: "rgba(0,212,240,0.5)",
                 boxShadow: "0 0 6px rgba(0,212,240,0.3)",
               }}
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
             />
             <span className="font-mono tracking-widest text-[10px] text-white/25">
               HARSHIL

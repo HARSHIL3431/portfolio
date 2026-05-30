@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useEffect, useState, useMemo } from "react";
-import { useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { projects } from "@/content/projects";
-import { GSAP_EASE, SCRUB } from "./cinematicMotion";
+import { SCRUB } from "./cinematicMotion";
 
 function createSeededRandom(seed: number) {
   let s = seed >>> 0;
@@ -14,23 +14,58 @@ function createSeededRandom(seed: number) {
 }
 
 /* ─── Animated Metric Counter ──────────────────────────── */
+/**
+ * Counter only starts animating after `canAnimate` becomes true.
+ * This prevents showing mixed/0 values during project transitions.
+ */
 function MetricCounter({
   value,
   label,
-  progress,
   accentColor,
+  canAnimate,
 }: {
   value: string;
   label: string;
-  progress: number;
   accentColor: string;
+  canAnimate: boolean;
 }) {
   const numericMatch = value.match(/^([\d.]+)/);
   const suffix = value.replace(/^[\d.]+/, "");
   const numericValue = numericMatch ? parseFloat(numericMatch[1]) : 0;
-  const displayValue = numericMatch
-    ? Math.round(numericValue * Math.min(progress * 2, 1))
-    : value;
+
+  const [displayNum, setDisplayNum] = useState(numericValue);
+  const rafRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
+  const DURATION = 1200; // ms
+
+  useEffect(() => {
+    if (!canAnimate || !numericMatch) return;
+
+    // Reset to full value immediately when not animating
+    setDisplayNum(numericValue);
+    startTimeRef.current = null;
+
+    const animate = (now: number) => {
+      if (startTimeRef.current === null) startTimeRef.current = now;
+      const elapsed = now - startTimeRef.current;
+      const t = Math.min(elapsed / DURATION, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplayNum(Math.round(numericValue * eased));
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canAnimate, value]);
+
+  const shown = canAnimate ? displayNum : numericValue;
 
   return (
     <div className="flex flex-col gap-1">
@@ -39,7 +74,7 @@ function MetricCounter({
           className="font-mono text-4xl md:text-5xl font-light tabular-nums"
           style={{ color: accentColor }}
         >
-          {numericMatch ? displayValue : value}
+          {numericMatch ? shown : value}
         </span>
         {suffix && (
           <span
@@ -99,67 +134,84 @@ function ProjectParticles({
 }
 
 /* ─── Single Project Slide ─────────────────────────────── */
+/**
+ * This component owns the ENTIRE visual state of one project.
+ * It is only mounted when it is the active project.
+ * AnimatePresence mode="wait" ensures exit completes before
+ * the next project mounts.
+ */
 function ProjectSlide({
   project,
-  isActive,
-  progress,
+  segmentProgress,
   reduced,
 }: {
   project: (typeof projects)[0];
-  isActive: boolean;
-  progress: number;
+  segmentProgress: number;
   reduced: boolean;
 }) {
-  const slideRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || reduced || !slideRef.current) return;
-
-    const init = async () => {
-      const { gsap } = await import("gsap");
-      if (!slideRef.current) return;
-
-      if (isActive) {
-        gsap.to(slideRef.current, {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 0.9,
-          ease: GSAP_EASE.card,
-        });
-      } else {
-        gsap.to(slideRef.current, {
-          opacity: 0,
-          scale: 0.97,
-          y: 24,
-          filter: "blur(6px)",
-          duration: 0.7,
-          ease: "power2.in",
-        });
-      }
-    };
-
-    init();
-  }, [isActive, reduced]);
-
+  // Counter only starts after entrance animation completes
+  const [counterActive, setCounterActive] = useState(false);
   const accent = project.accentColor;
 
+  const enterVariants = {
+    initial: {
+      opacity: 0,
+      y: reduced ? 0 : 28,
+      filter: reduced ? "blur(0px)" : "blur(8px)",
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+    },
+    exit: {
+      opacity: 0,
+      y: reduced ? 0 : -24,
+      filter: reduced ? "blur(0px)" : "blur(6px)",
+    },
+  };
+
+  const transition = {
+    duration: reduced ? 0.15 : 0.55,
+    ease: [0.16, 1, 0.3, 1] as const,
+  };
+
+  const exitTransition = {
+    duration: reduced ? 0.1 : 0.38,
+    ease: [0.4, 0, 1, 1] as const,
+  };
+
   return (
-    <div
-      ref={slideRef}
+    <motion.div
+      key={project.id}
+      variants={enterVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ ...transition }}
+      onAnimationComplete={(definition) => {
+        // Only activate counter after the entrance animation finishes
+        if (definition === "animate") {
+          setCounterActive(true);
+        }
+      }}
       className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 xl:px-28"
       style={{
-        opacity: reduced ? 1 : 0,
-        transform: reduced ? "none" : "translateY(24px) scale(0.97)",
-        pointerEvents: isActive ? "auto" : "none",
+        // Override framer-motion exit transition duration separately
+        // by using a custom exit prop on variants
       }}
     >
-      {/* Background atmospheric glow */}
-      <div
-        className="pointer-events-none absolute inset-0"
+      {/* Override exit transition speed */}
+      <motion.div
+        className="absolute inset-0"
+        variants={{
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          exit: { opacity: 0, transition: exitTransition },
+        }}
         style={{
           background: `radial-gradient(ellipse 65% 55% at 25% 50%, ${accent.primary} 0%, transparent 70%)`,
+          pointerEvents: "none",
         }}
       />
 
@@ -167,7 +219,7 @@ function ProjectSlide({
       {!reduced && <ProjectParticles color={accent.line} />}
 
       <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center">
-        {/* Left: Project info — visual hierarchy: number → title → philosophy → tags */}
+        {/* Left: Project info */}
         <div className="lg:col-span-7 flex flex-col gap-6">
           {/* Status + index */}
           <div className="flex items-center gap-4">
@@ -222,12 +274,12 @@ function ProjectSlide({
             {project.philosophy}
           </p>
 
-          {/* Metric counter */}
+          {/* Metric counter — only animates after entrance complete */}
           <MetricCounter
             value={project.metric.value}
             label={project.metric.label}
-            progress={progress}
             accentColor={accent.text}
+            canAnimate={counterActive}
           />
 
           {/* Tags */}
@@ -243,7 +295,7 @@ function ProjectSlide({
           </div>
         </div>
 
-        {/* Right: Engineering rationale — Challenge → Approach → Impact */}
+        {/* Right: Engineering rationale */}
         <div className="lg:col-span-5">
           <div
             className="border border-white/5 p-6 md:p-8 flex flex-col gap-5"
@@ -283,7 +335,7 @@ function ProjectSlide({
             ))}
           </div>
 
-          {/* Progress bar */}
+          {/* Progress bar — reflects position within current project's scroll segment */}
           <div className="mt-4 flex items-center gap-3">
             <div
               className="h-px flex-1 overflow-hidden"
@@ -292,7 +344,7 @@ function ProjectSlide({
               <div
                 className="h-full transition-none"
                 style={{
-                  width: `${progress * 100}%`,
+                  width: `${segmentProgress * 100}%`,
                   background: accent.line,
                 }}
               />
@@ -301,12 +353,12 @@ function ProjectSlide({
               className="font-mono text-[8px] tracking-widest"
               style={{ color: "rgba(255,255,255,0.15)" }}
             >
-              {String(Math.round(progress * 100)).padStart(3, "0")}%
+              {String(Math.round(segmentProgress * 100)).padStart(3, "0")}%
             </span>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -315,7 +367,7 @@ export default function ResearchArchive() {
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const [activeProject, setActiveProject] = useState(0);
-  const [projectProgress, setProjectProgress] = useState(0);
+  const [segmentProgress, setSegmentProgress] = useState(0);
   const shouldReduceMotion = useReducedMotion() ?? false;
 
   const PER_PROJECT_SCROLL = 1.8;
@@ -336,7 +388,7 @@ export default function ResearchArchive() {
       if (!trigger) return;
 
       ctx = gsap.context(() => {
-        // Fade scene in with depth-shift
+        // Fade section container in
         gsap.fromTo(
           stickyRef.current,
           { opacity: 0 },
@@ -352,7 +404,7 @@ export default function ResearchArchive() {
           }
         );
 
-        // Track overall progress → active project
+        // Track scroll → active project + segment progress
         ScrollTrigger.create({
           trigger,
           start: "top top",
@@ -366,14 +418,15 @@ export default function ResearchArchive() {
               Math.floor(self.progress / segmentSize),
               totalProjects - 1
             );
-            const segmentProgress =
+            const seg =
               (self.progress - activeIdx * segmentSize) / segmentSize;
+
             setActiveProject(activeIdx);
-            setProjectProgress(Math.max(0, Math.min(1, segmentProgress)));
+            setSegmentProgress(Math.max(0, Math.min(1, seg)));
           },
         });
 
-        // Fade out at end
+        // Fade section out at end
         gsap.to(stickyRef.current, {
           opacity: 0,
           scrollTrigger: {
@@ -395,7 +448,11 @@ export default function ResearchArchive() {
       id="projects"
       ref={sectionRef}
       className="relative"
-      style={{ height: `${TOTAL_HEIGHT_VH}vh` }}
+      style={{
+        height: `${TOTAL_HEIGHT_VH}vh`,
+        background:
+          "linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.96) 3%, rgba(5,5,5,0.96) 97%, rgba(5,5,5,0) 100%)",
+      }}
     >
       <div
         ref={stickyRef}
@@ -415,7 +472,7 @@ export default function ResearchArchive() {
         {/* Section label */}
         <div className="absolute top-8 left-6 md:left-16 xl:left-28 z-20">
           <div className="font-mono text-[9px] tracking-widest text-white/12 uppercase">
-            /// WHAT I BUILD
+            /// PROJECTS
           </div>
         </div>
 
@@ -436,16 +493,20 @@ export default function ResearchArchive() {
           ))}
         </div>
 
-        {/* Project slides */}
-        {projects.map((project, i) => (
+        {/*
+         * AnimatePresence mode="wait":
+         * — exit animation of the outgoing project runs to completion
+         * — only then does the incoming project mount and animate in
+         * — eliminates ALL simultaneous visibility of two projects
+         */}
+        <AnimatePresence mode="wait" initial={false}>
           <ProjectSlide
-            key={project.id}
-            project={project}
-            isActive={i === activeProject}
-            progress={i === activeProject ? projectProgress : 0}
+            key={projects[activeProject]?.id ?? activeProject}
+            project={projects[activeProject] ?? projects[0]}
+            segmentProgress={segmentProgress}
             reduced={shouldReduceMotion}
           />
-        ))}
+        </AnimatePresence>
       </div>
     </section>
   );

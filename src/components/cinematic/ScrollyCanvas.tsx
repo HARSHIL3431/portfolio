@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useMemo, useState } from "react";
-import { motion, useReducedMotion, useMotionValueEvent, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useMotionValueEvent, useTransform } from "framer-motion";
 import { useCinematicScroll } from "@/providers/ScrollProvider";
 import { Container } from "@/components/layout/Container";
 import { MOTION } from "./cinematicMotion";
@@ -126,14 +126,8 @@ const PHASES = [
   {
     threshold: 0.22,
     headline: "Architecting\nIntelligence",
-    mono: "RESEARCH × ENGINEERING",
+    mono: "DEEP LEARNING × SYSTEMS",
     subtitle: "Where human intuition meets machine precision.",
-  },
-  {
-    threshold: 0.35,
-    headline: "The Work\nSpeaks",
-    mono: "ENTER THE ARCHIVE",
-    subtitle: "",
   },
 ] as const;
 
@@ -175,7 +169,6 @@ function AtmosphericParticles({ count = 16 }: { count?: number }) {
 function HeroOverlay({
   phaseIndex,
   reduced,
-  progress,
 }: {
   phaseIndex: number;
   reduced: boolean;
@@ -183,55 +176,62 @@ function HeroOverlay({
 }) {
   const phase = PHASES[phaseIndex] ?? PHASES[0];
 
+  const phaseDuration = reduced ? 0.2 : 0.55;
+  const phaseExit = reduced ? 0.12 : 0.28;
+
   return (
     <Container className="max-w-7xl px-6 md:px-12 xl:px-24 h-full flex flex-col justify-end pb-20 md:pb-24">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 items-end">
         {/* Left column — identity */}
         <div className="lg:col-span-7">
-          <motion.p
-            key={`mono-${phaseIndex}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="font-mono text-[10px] tracking-[0.5em] uppercase mb-5"
-            style={{ color: "rgba(255,255,255,0.18)" }}
-          >
-            /// {phase.mono}
-          </motion.p>
-
-          <motion.h1
-            key={phaseIndex}
-            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{
-              duration: reduced ? 0.35 : MOTION.scene.duration,
-              ease: MOTION.scene.ease,
-            }}
-            className="font-heading leading-[0.9] tracking-tight text-white max-w-4xl whitespace-pre-line"
-            style={{
-              fontSize: "clamp(3.2rem, 7vw, 6.5rem)",
-            }}
-          >
-            {phase.headline ?? ""}
-          </motion.h1>
+          {/*
+           * AnimatePresence mode="wait" on the left column:
+           * the previous phase's mono/headline exits fully before
+           * the new phase's content appears — no two headlines visible.
+           */}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={phaseIndex}
+              initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
+              transition={{ duration: phaseDuration, ease: MOTION.scene.ease }}
+            >
+              <p
+                className="font-mono text-[10px] tracking-[0.5em] uppercase mb-5"
+                style={{ color: "rgba(255,255,255,0.18)" }}
+              >
+                /// {phase.mono}
+              </p>
+              <h1
+                className="font-heading leading-[0.9] tracking-tight text-white max-w-4xl whitespace-pre-line"
+                style={{ fontSize: "clamp(3.2rem, 7vw, 6.5rem)" }}
+              >
+                {phase.headline ?? ""}
+              </h1>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Right column — subtitle */}
         <div className="lg:col-span-5 flex flex-col gap-5 lg:pl-8">
-          <motion.p
-            key={`sub-${phaseIndex}`}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: reduced ? 0.35 : MOTION.card.duration,
-              delay: 0.12,
-              ease: MOTION.card.ease,
-            }}
-            className="font-sans text-base md:text-lg leading-relaxed max-w-md"
-            style={{ color: "rgba(255,255,255,0.35)" }}
-          >
-            {phase.subtitle}
-          </motion.p>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key={`sub-${phaseIndex}`}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -8, transition: { duration: phaseExit } }}
+              transition={{
+                duration: phaseDuration,
+                delay: reduced ? 0 : 0.08,
+                ease: MOTION.card.ease,
+              }}
+              className="font-sans text-base md:text-lg leading-relaxed max-w-md"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            >
+              {phase.subtitle}
+            </motion.p>
+          </AnimatePresence>
 
           <div
             className="h-px w-full"
@@ -266,11 +266,11 @@ export function ScrollyCanvas() {
   const canvasScale = useTransform(scrollYProgress, [0, 0.35, 0.55], [1, 1.03, 1.06]);
   const canvasOpacity = useTransform(
     scrollYProgress,
-    [0, 0.35, 0.50, 0.55],
-    [1, 1, 0.3, 0]
+    [0, 0.25, 0.40, 0.50],
+    [1, 1, 0.15, 0]
   );
 
-  const overlayOpacity = useTransform(scrollYProgress, [0, 0.06, 0.32, 0.42], [0, 1, 1, 0]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.06, 0.20, 0.30], [0, 1, 1, 0]);
   const overlayY = useTransform(scrollYProgress, [0, 1], ["1%", "-5%"]);
 
   useEffect(() => {

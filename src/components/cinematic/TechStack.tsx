@@ -170,7 +170,10 @@ export default function TechStack() {
   const baseStyle = shouldReduceMotion ? {} : { opacity: 0 };
 
   return (
-    <section ref={sectionRef} className="relative" style={{ height: "260vh" }}>
+    <section ref={sectionRef} className="relative" style={{
+      height: "260vh",
+      background: 'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.96) 3%, rgba(5,5,5,0.96) 97%, rgba(5,5,5,0) 100%)',
+    }}>
       <div
         ref={stickyRef}
         className="sticky top-0 h-screen overflow-hidden w-full flex flex-col justify-center"

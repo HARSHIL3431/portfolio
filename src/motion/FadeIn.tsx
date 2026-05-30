@@ -47,7 +47,7 @@ export function FadeIn({
         y: 0,
         filter: finalFilter,
       }}
-      viewport={{ once: true, margin: viewportMargin as any }}
+      viewport={{ once: false, margin: "-15%" as any }}
       transition={{
         duration,
         delay,
