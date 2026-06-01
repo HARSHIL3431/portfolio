@@ -4,6 +4,7 @@ import { useRef, useEffect } from "react";
 import { useReducedMotion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
 import { GSAP_EASE } from "./cinematicMotion";
+import { useOpacityFallback } from "@/hooks/useOpacityFallback";
 
 /**
  * FutureVision — brief cinematic coda.
@@ -18,6 +19,8 @@ export default function FutureVision() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const bodyRef = useRef<HTMLParagraphElement>(null);
   const shouldReduceMotion = useReducedMotion() ?? false;
+
+  useOpacityFallback(stickyRef, 800, shouldReduceMotion);
 
   useEffect(() => {
     if (typeof window === "undefined" || shouldReduceMotion) return;

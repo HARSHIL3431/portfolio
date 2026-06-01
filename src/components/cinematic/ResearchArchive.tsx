@@ -5,6 +5,131 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { projects } from "@/content/projects";
 import { SCRUB } from "./cinematicMotion";
 
+/* ─── Project Thumbnail ────────────────────────────────── */
+function ProjectThumbnail({
+  src,
+  alt,
+  accentColor,
+}: {
+  src: string;
+  alt: string;
+  accentColor: string;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  if (imgError) {
+    return (
+      <div
+        className="w-full flex items-center justify-center"
+        style={{
+          aspectRatio: "16/9",
+          background: "linear-gradient(135deg, #1a1a2e, #16213e)",
+          borderRadius: "2px",
+        }}
+      >
+        <span className="font-mono text-xs text-white/30 tracking-widest uppercase">
+          {alt}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="relative w-full overflow-hidden"
+      style={{ aspectRatio: "16/9", borderRadius: "2px" }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover"
+        style={{ borderRadius: "2px" }}
+        onError={() => setImgError(true)}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          boxShadow: `inset 0 0 30px ${accentColor}10, inset 0 -20px 40px rgba(5,5,5,0.6)`,
+          borderRadius: "2px",
+        }}
+      />
+    </div>
+  );
+}
+
+/* ─── Screenshot Gallery ───────────────────────────────── */
+function ScreenshotGallery({
+  screenshots,
+  accentColor,
+}: {
+  screenshots: string[];
+  accentColor: string;
+}) {
+  if (!screenshots || screenshots.length === 0) return null;
+
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+      {screenshots.map((src, i) => (
+        <ScreenshotThumb key={i} src={src} index={i} accentColor={accentColor} />
+      ))}
+    </div>
+  );
+}
+
+function ScreenshotThumb({
+  src,
+  index,
+  accentColor,
+}: {
+  src: string;
+  index: number;
+  accentColor: string;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  if (imgError) {
+    return (
+      <div
+        className="flex-shrink-0 flex items-center justify-center"
+        style={{
+          width: "120px",
+          height: "75px",
+          background: "linear-gradient(135deg, #1a1a2e, #16213e)",
+          borderRadius: "2px",
+          border: "1px solid rgba(255,255,255,0.05)",
+        }}
+      >
+        <span className="font-mono text-[8px] text-white/20">IMG {index + 1}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex-shrink-0 overflow-hidden transition-all duration-300"
+      style={{
+        width: "120px",
+        height: "75px",
+        borderRadius: "2px",
+        border: "1px solid rgba(255,255,255,0.05)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = `${accentColor}40`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
+      }}
+    >
+      <img
+        src={src}
+        alt={`Screenshot ${index + 1}`}
+        className="w-full h-full object-cover"
+        onError={() => setImgError(true)}
+      />
+    </div>
+  );
+}
+
 function createSeededRandom(seed: number) {
   let s = seed >>> 0;
   return function next(): number {
@@ -220,7 +345,16 @@ function ProjectSlide({
 
       <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center">
         {/* Left: Project info */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
+        <div className="lg:col-span-7 flex flex-col gap-5">
+          {/* Thumbnail */}
+          {project.thumbnail && (
+            <ProjectThumbnail
+              src={project.thumbnail}
+              alt={project.title}
+              accentColor={accent.text}
+            />
+          )}
+
           {/* Status + index */}
           <div className="flex items-center gap-4">
             <div
@@ -293,10 +427,93 @@ function ProjectSlide({
               </span>
             ))}
           </div>
+
+          {/* Screenshot gallery */}
+          {project.screenshots && project.screenshots.length > 0 && (
+            <ScreenshotGallery
+              screenshots={project.screenshots}
+              accentColor={accent.text}
+            />
+          )}
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-3">
+            {project.github && (
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[9px] tracking-widest uppercase border px-4 py-2 transition-all duration-300 hover-lift"
+                style={{
+                  color: "rgba(255,255,255,0.5)",
+                  borderColor: "rgba(255,255,255,0.10)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = `${accent.text}50`;
+                  e.currentTarget.style.color = accent.text;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+                }}
+              >
+                GitHub ↗
+              </a>
+            )}
+            {project.demo ? (
+              <a
+                href={project.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[9px] tracking-widest uppercase border px-4 py-2 transition-all duration-300"
+                style={{
+                  color: accent.text,
+                  borderColor: `${accent.text}40`,
+                }}
+              >
+                Live Demo →
+              </a>
+            ) : (
+              <span
+                className="font-mono text-[9px] tracking-widest uppercase border px-4 py-2"
+                style={{
+                  color: "rgba(255,255,255,0.20)",
+                  borderColor: "rgba(255,255,255,0.05)",
+                  opacity: 0.4,
+                  cursor: "not-allowed",
+                }}
+                title="Coming Soon"
+              >
+                Coming Soon
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Right: Engineering rationale */}
-        <div className="lg:col-span-5">
+        {/* Right: Engineering rationale + metrics */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          {/* Detailed metrics row */}
+          {project.metrics && project.metrics.length > 0 && (
+            <div
+              className="flex gap-4 p-4 border border-white/5"
+              style={{ background: "rgba(5,5,5,0.3)" }}
+            >
+              {project.metrics.map((m: { value: string; label: string }, idx: number) => (
+                <div key={idx} className="flex-1 text-center">
+                  <div
+                    className="font-mono text-lg md:text-xl font-light"
+                    style={{ color: accent.text }}
+                  >
+                    {m.value}
+                  </div>
+                  <div className="font-mono text-[8px] tracking-widest uppercase text-white/25 mt-1">
+                    {m.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div
             className="border border-white/5 p-6 md:p-8 flex flex-col gap-5"
             style={{

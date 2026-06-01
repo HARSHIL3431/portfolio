@@ -86,6 +86,13 @@ body {
   transform: translateZ(0);
 }
 
+/* Prevent black-screen flash on sticky containers
+ * GSAP sets opacity:0 initially; if scroll trigger doesn't fire,
+ * this timeout-based fallback ensures content is visible. */
+.cinematic-sticky-fallback {
+  will-change: opacity;
+}
+
 .parallax-layer {
   will-change: transform;
 }

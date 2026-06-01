@@ -4,6 +4,7 @@ import { useRef, useEffect } from "react";
 import { useReducedMotion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
 import { GSAP_EASE, SCRUB } from "./cinematicMotion";
+import { useOpacityFallback } from "@/hooks/useOpacityFallback";
 
 export default function NarrativeIntro() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -15,6 +16,9 @@ export default function NarrativeIntro() {
   const glowRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion() ?? false;
+
+  // Prevent black screen if GSAP doesn't fire
+  useOpacityFallback(stickyRef, 800, shouldReduceMotion);
 
   useEffect(() => {
     if (typeof window === "undefined" || shouldReduceMotion) return;
@@ -120,7 +124,6 @@ export default function NarrativeIntro() {
 
   return (
     <section
-      id="about"
       ref={sectionRef}
       className="relative"
       style={{

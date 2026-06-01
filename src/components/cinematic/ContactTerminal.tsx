@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
 import { GSAP_EASE, SCRUB } from "./cinematicMotion";
+import { useOpacityFallback } from "@/hooks/useOpacityFallback";
 
 const TERMINAL_LINES = [
   { text: "> ESTABLISHING_SECURE_CONNECTION...", color: "rgba(138,138,138,0.7)" },
@@ -57,6 +58,8 @@ export default function ContactTerminal() {
   const glowRef = useRef<HTMLDivElement>(null);
   const [terminalLines, setTerminalLines] = useState(0);
   const shouldReduceMotion = useReducedMotion() ?? false;
+
+  useOpacityFallback(stickyRef, 800, shouldReduceMotion);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -204,12 +207,30 @@ export default function ContactTerminal() {
                 ...(shouldReduceMotion ? {} : { opacity: 0 }),
               }}
             >
-              Let&apos;s Build
+              Let&apos;s Build Intelligent
               <br />
               <span className="italic" style={{ opacity: 0.6 }}>
-                Something
+                Systems Together
               </span>
             </h2>
+
+            {/* Subheading */}
+            <p
+              className="font-sans text-sm md:text-base leading-relaxed max-w-lg"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            >
+              Interested in AI, machine learning, or innovative software solutions?
+              Let&apos;s connect and create something impactful.
+            </p>
+
+            {/* Email CTA */}
+            <a
+              href="mailto:harshilthakkar3435@gmail.com"
+              className="font-mono text-lg md:text-xl tracking-wide transition-colors duration-300 hover:text-cyan-glow"
+              style={{ color: "rgba(255,255,255,0.5)" }}
+            >
+              harshilthakkar3435@gmail.com
+            </a>
 
             <div className="flex flex-col gap-9">
               {/* Terminal block */}
@@ -323,7 +344,7 @@ export default function ContactTerminal() {
                 </button>
               </form>
 
-              {/* Social links — real URLs */}
+              {/* Social links + Resume — corrected URLs */}
               <div
                 ref={linksRef}
                 className="flex flex-wrap gap-8 pt-7 border-t border-white/5"
@@ -332,26 +353,31 @@ export default function ContactTerminal() {
                 {[
                   {
                     label: "GITHUB",
-                    href: "https://github.com/harshil3431",
+                    href: "https://github.com/HARSHIL3431",
                   },
                   {
                     label: "LINKEDIN",
-                    href: "https://linkedin.com/in/harshil-patel",
+                    href: "https://linkedin.com/in/harshilthakkar-dev",
                   },
                   {
                     label: "EMAIL",
-                    href: "mailto:harshil3431@gmail.com",
+                    href: "mailto:harshilthakkar3435@gmail.com",
+                  },
+                  {
+                    label: "RESUME",
+                    href: "/resume.pdf",
                   },
                 ].map(({ label, href }) => (
                   <a
                     key={label}
                     href={href}
-                    target={href.startsWith("http") ? "_blank" : undefined}
+                    target={href.startsWith("http") || href.endsWith(".pdf") ? "_blank" : undefined}
                     rel={
-                      href.startsWith("http")
+                      href.startsWith("http") || href.endsWith(".pdf")
                         ? "noopener noreferrer"
                         : undefined
                     }
+                    download={href.endsWith(".pdf") ? true : undefined}
                     className="font-mono text-[9px] tracking-widest text-white/20 transition-colors duration-250 hover:text-cyan-glow focus-visible:text-cyan-glow"
                   >
                     {label}
@@ -361,6 +387,19 @@ export default function ContactTerminal() {
             </div>
           </div>
         </Container>
+
+        {/* Footer bar */}
+        <div
+          className="absolute bottom-0 left-0 right-0 px-6 md:px-12 xl:px-24 py-5 flex justify-between items-center"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <span className="font-mono text-[9px] tracking-widest text-white/15 uppercase">
+            © 2025 Harshil Thakkar
+          </span>
+          <span className="font-mono text-[9px] tracking-widest text-white/15 uppercase">
+            Built with Next.js
+          </span>
+        </div>
       </div>
     </section>
   );

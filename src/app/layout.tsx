@@ -24,24 +24,33 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://harshilthakkar.dev"),
   title: {
     template: "%s | Harshil Thakkar",
     default: "Harshil Thakkar — AI/ML Engineer",
   },
   description:
-    "AI/ML Engineer building machine learning systems that ship to production — from perception engines to generative AI interfaces.",
+    "AI & Machine Learning Engineer building intelligent systems through machine learning, computer vision, and AI-powered applications.",
   openGraph: {
     title: "Harshil Thakkar — AI/ML Engineer",
     description:
-      "Building machine learning systems at the intersection of research and production engineering.",
+      "AI & Machine Learning Engineer building intelligent systems through machine learning, computer vision, and AI-powered applications.",
     type: "website",
     siteName: "Harshil Thakkar",
+    images: [
+      {
+        url: "/images/profile/hero-harshil.png",
+        width: 1200,
+        height: 630,
+        alt: "Harshil Thakkar — AI/ML Engineer",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Harshil Thakkar — AI/ML Engineer",
     description:
-      "Building machine learning systems at the intersection of research and production engineering.",
+      "AI & Machine Learning Engineer building intelligent systems through machine learning, computer vision, and AI-powered applications.",
   },
 };
 

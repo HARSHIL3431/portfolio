@@ -1,7 +1,9 @@
 import MinimalNav from '@/components/layout/MinimalNav'
+import AboutSection from '@/components/cinematic/AboutSection'
 import { ScrollyCanvas } from '@/components/cinematic/ScrollyCanvas'
 import { SceneBreath } from '@/components/cinematic/SceneBreath'
 import NarrativeIntro from '@/components/cinematic/NarrativeIntro'
+import ExpertiseSection from '@/components/cinematic/ExpertiseSection'
 import TechStack from '@/components/cinematic/TechStack'
 import ResearchArchive from '@/components/cinematic/ResearchArchive'
 import ExperienceTimeline from '@/components/cinematic/ExperienceTimeline'
@@ -19,8 +21,20 @@ export default function Page() {
       {/* Breathing room — transition from person to work */}
       <SceneBreath height="12vh" glow glowColor="rgba(0, 212, 240, 0.025)" />
 
+      {/* ═══ WHO I AM ═══ About — portrait, bio, links */}
+      <AboutSection />
+
+      {/* Breathing room */}
+      <SceneBreath height="8vh" />
+
       {/* ═══ HOW I THINK ═══ Philosophy & identity */}
       <NarrativeIntro />
+
+      {/* Breathing room */}
+      <SceneBreath height="8vh" />
+
+      {/* ═══ EXPERTISE ═══ What I build */}
+      <ExpertiseSection />
 
       {/* Breathing room */}
       <SceneBreath height="8vh" />

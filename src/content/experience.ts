@@ -12,8 +12,8 @@ export const experience = [
   {
     type: "education" as const,
     role: "B.Tech — Artificial Intelligence & Machine Learning",
-    org: "Institute of Technology",
-    period: "2024 — 2028",
+    org: "CHARUSAT",
+    period: "2024 — 2028 (Expected)",
     description: "Specialization in intelligent systems, computer vision, and AI design.",
     challenge: "Building deep technical foundations across the full spectrum of AI — from mathematical theory to practical implementation.",
     approach: "Combining rigorous coursework in ML, deep learning, and computer vision with hands-on project work and research exploration.",

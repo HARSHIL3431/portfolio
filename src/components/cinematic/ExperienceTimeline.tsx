@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { experience } from "@/content/experience";
 import { certifications } from "@/content/certifications";
 import { GSAP_EASE, SCRUB } from "./cinematicMotion";
+import { useOpacityFallback } from "@/hooks/useOpacityFallback";
 
 export default function ExperienceTimeline() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -14,6 +15,8 @@ export default function ExperienceTimeline() {
   const blocksRef = useRef<(HTMLDivElement | null)[]>([]);
   const credsRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion() ?? false;
+
+  useOpacityFallback(stickyRef, 800, shouldReduceMotion);
 
   useEffect(() => {
     if (typeof window === "undefined" || shouldReduceMotion) return;
@@ -226,7 +229,7 @@ export default function ExperienceTimeline() {
               <div className="font-mono text-[9px] tracking-widest uppercase mb-6" style={{ color: "rgba(255,255,255,0.15)" }}>
                 /// CREDENTIALS
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {certifications.map((cert, i) => (
                   <div key={i} className="flex flex-col gap-2 border-l border-white/5 pl-4">
                     <span

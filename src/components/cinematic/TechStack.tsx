@@ -5,6 +5,7 @@ import { useReducedMotion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
 import { skills } from "@/content/skills";
 import { GSAP_EASE, SCRUB } from "./cinematicMotion";
+import { useOpacityFallback } from "@/hooks/useOpacityFallback";
 
 function createSeededRandom(seed: number) {
   let s = seed >>> 0;
@@ -101,6 +102,8 @@ export default function TechStack() {
   const domainsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [activeDomain, setActiveDomain] = useState<number | null>(null);
   const shouldReduceMotion = useReducedMotion() ?? false;
+
+  useOpacityFallback(stickyRef, 800, shouldReduceMotion);
 
   useEffect(() => {
     if (typeof window === "undefined" || shouldReduceMotion) return;

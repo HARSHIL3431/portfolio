@@ -13,6 +13,18 @@ export const projects = [
       approach: "Dual OCR pipeline with adaptive image preprocessing, intelligent date extraction, and contextual label parsing for real-world label recognition across varied packaging formats.",
       impact: "Automated expiry tracking system with smart reminders, real-time inventory monitoring, and AI-assisted scanning — reducing human error by orders of magnitude.",
     },
+    github: "https://github.com/HARSHIL3431/digital-expiry-tracker",
+    demo: null,
+    thumbnail: "/images/digital-expiry-tracker/thumbnail.png",
+    screenshots: [
+      "/images/digital-expiry-tracker/dashboard-1.png",
+      "/images/digital-expiry-tracker/dashboard-2.png",
+    ],
+    metrics: [
+      { value: "95%", label: "OCR Success" },
+      { value: "3+", label: "Formats" },
+      { value: "Dual", label: "OCR Pipeline" },
+    ],
   },
   {
     id: "02",
@@ -28,6 +40,18 @@ export const projects = [
       approach: "LLM-powered intent classification pipeline with structured retrieval, contextual response generation, and multi-lingual support for regional accessibility.",
       impact: "AI farming assistant delivering localized, actionable agricultural guidance through conversational interaction — democratizing expert knowledge.",
     },
+    github: "https://github.com/HARSHIL3431/navjeevan-ai",
+    demo: null,
+    thumbnail: "/images/navjeevan-ai/thumbnail.png",
+    screenshots: [
+      "/images/navjeevan-ai/dashboard-1.png",
+      "/images/navjeevan-ai/dashboard-2.png",
+    ],
+    metrics: [
+      { value: "6", label: "Farmer Services" },
+      { value: "5", label: "Structured Datasets" },
+      { value: "2-Step", label: "AI Pipeline" },
+    ],
   },
   {
     id: "03",
@@ -43,5 +67,16 @@ export const projects = [
       approach: "Combined LSTM forecasting with technical indicator analysis and explainable signal reasoning, surfacing the 'why' behind every prediction.",
       impact: "Interactive financial intelligence dashboard with AI-assisted trend analysis, contextual recommendations, and transparent decision rationale.",
     },
+    github: "https://github.com/HARSHIL3431/stock-price-prediction-lstm",
+    demo: null,
+    thumbnail: "/images/stock-analysis/thumbnail.png",
+    screenshots: [
+      "/images/stock-analysis/dashboard-1.png",
+    ],
+    metrics: [
+      { value: "10Y", label: "Historical Data" },
+      { value: "60-Day", label: "Window" },
+      { value: "2-Layer", label: "LSTM" },
+    ],
   },
 ];
