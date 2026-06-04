@@ -276,7 +276,7 @@ export default function ExpertiseSection() {
                         style={{
                           color: isActive
                             ? "rgba(255,255,255,0.45)"
-                            : "rgba(255,255,255,0.25)",
+                            : "rgba(255,255,255,0.32)",
                         }}
                       >
                         {card.description}
@@ -291,7 +291,7 @@ export default function ExpertiseSection() {
                             style={{
                               color: isActive
                                 ? `${card.accentColor}AA`
-                                : "rgba(255,255,255,0.20)",
+                                : "rgba(255,255,255,0.28)",
                               borderColor: isActive
                                 ? `${card.accentColor}30`
                                 : "rgba(255,255,255,0.06)",

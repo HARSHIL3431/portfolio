@@ -72,6 +72,7 @@ export const projects = [
     thumbnail: "/images/stock-analysis/thumbnail.png",
     screenshots: [
       "/images/stock-analysis/dashboard-1.png",
+      "/images/stock-analysis/dashboard-2.png",
     ],
     metrics: [
       { value: "10Y", label: "Historical Data" },

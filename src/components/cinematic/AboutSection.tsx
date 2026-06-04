@@ -272,7 +272,7 @@ export default function AboutSection() {
               {/* Bio */}
               <p
                 className="font-sans text-sm md:text-base leading-relaxed max-w-lg"
-                style={{ color: "rgba(255,255,255,0.40)" }}
+                style={{ color: "rgba(255,255,255,0.50)" }}
               >
                 I am an AI & Machine Learning student passionate about building
                 intelligent systems that solve real-world problems. Currently
@@ -287,7 +287,7 @@ export default function AboutSection() {
                     key={area}
                     className="font-mono text-[9px] tracking-widest uppercase border px-3 py-1 transition-colors duration-300 hover:bg-cyan-glow/10 hover:border-cyan-glow/40"
                     style={{
-                      color: "rgba(255,255,255,0.35)",
+                      color: "rgba(255,255,255,0.40)",
                       borderColor: "rgba(255,255,255,0.08)",
                     }}
                   >
@@ -315,6 +315,7 @@ export default function AboutSection() {
                   rel="noopener noreferrer"
                   download
                   className="font-mono text-[10px] tracking-widest uppercase px-5 py-2.5 border relative overflow-hidden group hover-lift transition-all duration-300"
+                  aria-label="Download Resume PDF"
                   style={{
                     color: "#fff",
                     borderColor: "rgba(0,212,240,0.2)",
@@ -346,7 +347,7 @@ export default function AboutSection() {
                       target={href.startsWith("http") ? "_blank" : undefined}
                       rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                       className="transition-colors duration-300 hover:text-cyan-glow"
-                      style={{ color: "rgba(255,255,255,0.25)" }}
+                      style={{ color: "rgba(255,255,255,0.35)" }}
                       title={label}
                     >
                       {icon}

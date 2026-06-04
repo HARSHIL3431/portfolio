@@ -212,7 +212,7 @@ export default function ExperienceTimeline() {
                             >
                               {label}:
                             </span>
-                            <p className="font-sans text-sm text-white/38 leading-relaxed">
+                            <p className="font-sans text-sm text-white/48 leading-relaxed">
                               {value}
                             </p>
                           </div>
@@ -226,7 +226,7 @@ export default function ExperienceTimeline() {
 
             {/* Credentials — compact horizontal */}
             <div ref={credsRef} className="pt-8 border-t border-white/5" style={baseStyle}>
-              <div className="font-mono text-[9px] tracking-widest uppercase mb-6" style={{ color: "rgba(255,255,255,0.15)" }}>
+              <div className="font-mono text-[9px] tracking-widest uppercase mb-6" style={{ color: "rgba(255,255,255,0.20)" }}>
                 /// CREDENTIALS
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

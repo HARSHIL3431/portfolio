@@ -404,7 +404,7 @@ function ProjectSlide({
           </div>
 
           {/* Philosophy */}
-          <p className="font-sans text-sm md:text-base text-white/40 leading-relaxed max-w-lg">
+          <p className="font-sans text-sm md:text-base text-white/50 leading-relaxed max-w-lg">
             {project.philosophy}
           </p>
 
@@ -421,7 +421,7 @@ function ProjectSlide({
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="font-mono text-[9px] tracking-widest uppercase border border-white/8 px-3 py-1 text-white/30"
+                className="font-mono text-[9px] tracking-widest uppercase border border-white/8 px-3 py-1 text-white/35"
               >
                 {tag}
               </span>
@@ -445,7 +445,7 @@ function ProjectSlide({
                 rel="noopener noreferrer"
                 className="font-mono text-[9px] tracking-widest uppercase border px-4 py-2 transition-all duration-300 hover-lift"
                 style={{
-                  color: "rgba(255,255,255,0.5)",
+                  color: "rgba(255,255,255,0.6)",
                   borderColor: "rgba(255,255,255,0.10)",
                 }}
                 onMouseEnter={(e) => {
@@ -545,7 +545,7 @@ function ProjectSlide({
                 >
                   {label}:
                 </span>
-                <p className="font-mono text-[11px] text-white/35 leading-relaxed">
+                <p className="font-mono text-[11px] text-white/45 leading-relaxed">
                   {value}
                 </p>
               </div>

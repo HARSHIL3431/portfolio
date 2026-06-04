@@ -57,7 +57,32 @@ export default function ContactTerminal() {
   const linksRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const [terminalLines, setTerminalLines] = useState(0);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const shouldReduceMotion = useReducedMotion() ?? false;
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const name = (form.elements.namedItem("contact-name") as HTMLInputElement)?.value.trim();
+    const email = (form.elements.namedItem("contact-email") as HTMLInputElement)?.value.trim();
+    const message = (form.elements.namedItem("contact-message") as HTMLTextAreaElement)?.value.trim();
+
+    const errors: Record<string, boolean> = {};
+    if (!name) errors["contact-name"] = true;
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors["contact-email"] = true;
+    if (!message) errors["contact-message"] = true;
+
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length === 0) {
+      setFormSubmitted(true);
+      // Open mailto as fallback action
+      const subject = encodeURIComponent(`Portfolio Contact from ${name}`);
+      const body = encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`);
+      window.open(`mailto:harshilthakkar3435@gmail.com?subject=${subject}&body=${body}`, "_self");
+    }
+  };
 
   useOpacityFallback(stickyRef, 800, shouldReduceMotion);
 
@@ -250,99 +275,146 @@ export default function ContactTerminal() {
               </div>
 
               {/* Contact form */}
-              <form
-                ref={formRef}
-                className="flex flex-col gap-6 w-full max-w-xl"
-                style={{ opacity: shouldReduceMotion ? 1 : 0 }}
-                onSubmit={(e) => e.preventDefault()}
-              >
-                {[
-                  { label: "NAME", type: "text", id: "contact-name" },
-                  {
-                    label: "SIGNAL ADDRESS / EMAIL",
-                    type: "email",
-                    id: "contact-email",
-                  },
-                ].map(({ label, type, id }) => (
-                  <div key={id} className="flex flex-col gap-2">
+              {formSubmitted ? (
+                <div
+                  ref={formRef as unknown as React.Ref<HTMLDivElement>}
+                  className="flex flex-col items-center gap-5 py-10 max-w-xl"
+                  style={{ opacity: shouldReduceMotion ? 1 : 0 }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{
+                      border: "1px solid rgba(0,212,240,0.3)",
+                      background: "rgba(0,212,240,0.06)",
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00D4F0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <p className="font-mono text-xs tracking-widest uppercase" style={{ color: "#00D4F0" }}>
+                    TRANSMISSION_COMPLETE
+                  </p>
+                  <p className="font-sans text-sm text-white/40 text-center max-w-sm">
+                    Your email client should have opened. If not, reach me directly at{" "}
+                    <a href="mailto:harshilthakkar3435@gmail.com" className="text-cyan-glow hover:underline">
+                      harshilthakkar3435@gmail.com
+                    </a>
+                  </p>
+                </div>
+              ) : (
+                <form
+                  ref={formRef}
+                  className="flex flex-col gap-6 w-full max-w-xl"
+                  style={{ opacity: shouldReduceMotion ? 1 : 0 }}
+                  onSubmit={handleSubmit}
+                >
+                  {[
+                    { label: "NAME", type: "text", id: "contact-name" },
+                    {
+                      label: "SIGNAL ADDRESS / EMAIL",
+                      type: "email",
+                      id: "contact-email",
+                    },
+                  ].map(({ label, type, id }) => (
+                    <div key={id} className="flex flex-col gap-2">
+                      <label
+                        htmlFor={id}
+                        className="font-mono text-[9px] tracking-widest uppercase"
+                        style={{ color: "rgba(255,255,255,0.35)" }}
+                      >
+                        {label}
+                        {formErrors[id] && (
+                          <span className="ml-2" style={{ color: "rgba(255,100,100,0.7)" }}>— required</span>
+                        )}
+                      </label>
+                      <input
+                        id={id}
+                        name={id}
+                        type={type}
+                        required
+                        className="w-full bg-transparent border-b py-3 font-sans text-sm text-white outline-none transition-colors duration-250"
+                        style={{
+                          borderColor: formErrors[id]
+                            ? "rgba(255,100,100,0.3)"
+                            : "rgba(255,255,255,0.06)",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "rgba(0,212,240,0.25)";
+                          setFormErrors((prev) => ({ ...prev, [id]: false }));
+                        }}
+                        onBlur={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "rgba(255,255,255,0.06)")
+                        }
+                      />
+                    </div>
+                  ))}
+
+                  <div className="flex flex-col gap-2">
                     <label
-                      htmlFor={id}
+                      htmlFor="contact-message"
                       className="font-mono text-[9px] tracking-widest uppercase"
-                      style={{ color: "rgba(255,255,255,0.25)" }}
+                      style={{ color: "rgba(255,255,255,0.35)" }}
                     >
-                      {label}
+                      TRANSMISSION / MESSAGE
+                      {formErrors["contact-message"] && (
+                        <span className="ml-2" style={{ color: "rgba(255,100,100,0.7)" }}>— required</span>
+                      )}
                     </label>
-                    <input
-                      id={id}
-                      type={type}
-                      className="w-full bg-transparent border-b py-3 font-sans text-sm text-white outline-none transition-colors duration-250"
-                      style={{ borderColor: "rgba(255,255,255,0.06)" }}
-                      onFocus={(e) =>
-                        (e.currentTarget.style.borderColor =
-                          "rgba(0,212,240,0.25)")
-                      }
+                    <textarea
+                      id="contact-message"
+                      name="contact-message"
+                      rows={3}
+                      required
+                      className="w-full bg-transparent border-b py-3 font-sans text-sm text-white outline-none transition-colors duration-250 resize-none"
+                      style={{
+                        borderColor: formErrors["contact-message"]
+                          ? "rgba(255,100,100,0.3)"
+                          : "rgba(255,255,255,0.06)",
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(0,212,240,0.25)";
+                        setFormErrors((prev) => ({ ...prev, "contact-message": false }));
+                      }}
                       onBlur={(e) =>
                         (e.currentTarget.style.borderColor =
                           "rgba(255,255,255,0.06)")
                       }
                     />
                   </div>
-                ))}
 
-                <div className="flex flex-col gap-2">
-                  <label
-                    htmlFor="contact-message"
-                    className="font-mono text-[9px] tracking-widest uppercase"
-                    style={{ color: "rgba(255,255,255,0.25)" }}
-                  >
-                    TRANSMISSION / MESSAGE
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    rows={3}
-                    className="w-full bg-transparent border-b py-3 font-sans text-sm text-white outline-none transition-colors duration-250 resize-none"
-                    style={{ borderColor: "rgba(255,255,255,0.06)" }}
-                    onFocus={(e) =>
-                      (e.currentTarget.style.borderColor =
-                        "rgba(0,212,240,0.25)")
-                    }
-                    onBlur={(e) =>
-                      (e.currentTarget.style.borderColor =
-                        "rgba(255,255,255,0.06)")
-                    }
-                  />
-                </div>
-
-                <button
-                  id="contact-submit"
-                  type="submit"
-                  className="w-full py-4 mt-3 font-mono text-xs tracking-widest uppercase relative overflow-hidden group hover-lift"
-                  style={{
-                    border: "1px solid rgba(0,212,240,0.15)",
-                    color: "#fff",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(0,212,240,0.4)";
-                    e.currentTarget.style.boxShadow =
-                      "0 0 20px rgba(0,212,240,0.06)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(0,212,240,0.15)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                >
-                  <span className="relative z-10">
-                    INITIATE_COMMUNICATION →
-                  </span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                  <button
+                    id="contact-submit"
+                    type="submit"
+                    className="w-full py-4 mt-3 font-mono text-xs tracking-widest uppercase relative overflow-hidden group hover-lift"
                     style={{
-                      background:
-                        "linear-gradient(to right, rgba(0,212,240,0.025), transparent)",
+                      border: "1px solid rgba(0,212,240,0.15)",
+                      color: "#fff",
                     }}
-                  />
-                </button>
-              </form>
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(0,212,240,0.4)";
+                      e.currentTarget.style.boxShadow =
+                        "0 0 20px rgba(0,212,240,0.06)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(0,212,240,0.15)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    <span className="relative z-10">
+                      INITIATE_COMMUNICATION →
+                    </span>
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                      style={{
+                        background:
+                          "linear-gradient(to right, rgba(0,212,240,0.025), transparent)",
+                      }}
+                    />
+                  </button>
+                </form>
+              )}
 
               {/* Social links + Resume — corrected URLs */}
               <div
@@ -354,20 +426,24 @@ export default function ContactTerminal() {
                   {
                     label: "GITHUB",
                     href: "https://github.com/HARSHIL3431",
+                    ariaLabel: "Visit GitHub profile",
                   },
                   {
                     label: "LINKEDIN",
                     href: "https://linkedin.com/in/harshilthakkar-dev",
+                    ariaLabel: "Visit LinkedIn profile",
                   },
                   {
                     label: "EMAIL",
                     href: "mailto:harshilthakkar3435@gmail.com",
+                    ariaLabel: "Send email",
                   },
                   {
                     label: "RESUME",
                     href: "/resume.pdf",
+                    ariaLabel: "Download Resume PDF",
                   },
-                ].map(({ label, href }) => (
+                ].map(({ label, href, ariaLabel }) => (
                   <a
                     key={label}
                     href={href}
@@ -378,7 +454,8 @@ export default function ContactTerminal() {
                         : undefined
                     }
                     download={href.endsWith(".pdf") ? true : undefined}
-                    className="font-mono text-[9px] tracking-widest text-white/20 transition-colors duration-250 hover:text-cyan-glow focus-visible:text-cyan-glow"
+                    aria-label={ariaLabel}
+                    className="font-mono text-[9px] tracking-widest text-white/30 transition-colors duration-250 hover:text-cyan-glow focus-visible:text-cyan-glow"
                   >
                     {label}
                   </a>
@@ -393,11 +470,11 @@ export default function ContactTerminal() {
           className="absolute bottom-0 left-0 right-0 px-6 md:px-12 xl:px-24 py-5 flex justify-between items-center"
           style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
         >
-          <span className="font-mono text-[9px] tracking-widest text-white/15 uppercase">
+          <span className="font-mono text-[9px] tracking-widest text-white/20 uppercase">
             © 2025 Harshil Thakkar
           </span>
-          <span className="font-mono text-[9px] tracking-widest text-white/15 uppercase">
-            Built with Next.js
+          <span className="font-mono text-[9px] tracking-widest text-white/20 uppercase">
+            Designed & built with intention
           </span>
         </div>
       </div>

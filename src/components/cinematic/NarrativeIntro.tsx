@@ -165,7 +165,7 @@ export default function NarrativeIntro() {
               <div
                 ref={metaRef}
                 className="font-mono text-[9px] tracking-widest uppercase mb-7"
-                style={{ color: "rgba(255,255,255,0.15)" }}
+                style={{ color: "rgba(255,255,255,0.20)" }}
               >
                 /// HOW I THINK
               </div>
@@ -191,7 +191,7 @@ export default function NarrativeIntro() {
               <p
                 ref={line1Ref}
                 className="font-sans text-sm md:text-base leading-relaxed max-w-md"
-                style={{ color: "rgba(255,255,255,0.40)" }}
+                style={{ color: "rgba(255,255,255,0.50)" }}
               >
                 I design and build machine learning systems at the intersection
                 of research and production engineering. My work spans
@@ -229,7 +229,7 @@ export default function NarrativeIntro() {
                       borderColor: accent
                         ? "rgba(0,212,240,0.3)"
                         : "rgba(255,255,255,0.08)",
-                      color: "#8A8A93",
+                      color: "#9A9AA3",
                     }}
                   >
                     [{label}]

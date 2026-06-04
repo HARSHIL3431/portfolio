@@ -148,7 +148,7 @@ export default function FutureVision() {
             <p
               ref={bodyRef}
               className="font-sans text-sm md:text-base leading-relaxed max-w-lg mx-auto"
-              style={{ color: "rgba(255,255,255,0.35)", ...baseStyle }}
+              style={{ color: "rgba(255,255,255,0.45)", ...baseStyle }}
             >
               I&apos;m drawn to problems where the constraints are interesting
               — low-latency inference on constrained hardware, diffusion models

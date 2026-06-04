@@ -213,7 +213,7 @@ function HeroOverlay({
           </AnimatePresence>
         </div>
 
-        {/* Right column — subtitle */}
+        {/* Right column — subtitle + CTAs */}
         <div className="lg:col-span-5 flex flex-col gap-5 lg:pl-8">
           <AnimatePresence mode="wait" initial={false}>
             <motion.p
@@ -231,6 +231,75 @@ function HeroOverlay({
             >
               {phase.subtitle}
             </motion.p>
+          </AnimatePresence>
+
+          {/* Hero CTAs — only show in identity phase */}
+          <AnimatePresence>
+            {phaseIndex === 1 && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{
+                  duration: reduced ? 0.15 : 0.45,
+                  delay: reduced ? 0 : 0.18,
+                  ease: MOTION.card.ease,
+                }}
+                className="flex flex-wrap items-center gap-3 pointer-events-auto"
+              >
+                <a
+                  href="#projects"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="font-mono text-[10px] tracking-widest uppercase px-5 py-2.5 border relative overflow-hidden group hover-lift transition-all duration-300"
+                  style={{
+                    color: "#00D4F0",
+                    borderColor: "rgba(0,212,240,0.3)",
+                    backgroundColor: "rgba(0,212,240,0.06)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(0,212,240,0.55)";
+                    e.currentTarget.style.boxShadow = "0 0 24px rgba(0,212,240,0.1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(0,212,240,0.3)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <span className="relative z-10">View Projects →</span>
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                    style={{
+                      background: "linear-gradient(to right, rgba(0,212,240,0.06), transparent)",
+                    }}
+                  />
+                </a>
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  aria-label="Download Resume PDF"
+                  className="font-mono text-[10px] tracking-widest uppercase px-5 py-2.5 border relative overflow-hidden group hover-lift transition-all duration-300"
+                  style={{
+                    color: "rgba(255,255,255,0.6)",
+                    borderColor: "rgba(255,255,255,0.12)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+                    e.currentTarget.style.boxShadow = "0 0 16px rgba(255,255,255,0.04)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <span className="relative z-10">Resume ↗</span>
+                </a>
+              </motion.div>
+            )}
           </AnimatePresence>
 
           <div

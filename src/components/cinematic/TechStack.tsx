@@ -268,7 +268,7 @@ export default function TechStack() {
                         style={{
                           color: isActive
                             ? "rgba(255,255,255,0.45)"
-                            : "rgba(255,255,255,0.25)",
+                            : "rgba(255,255,255,0.32)",
                         }}
                       >
                         {domain.description}
@@ -283,7 +283,7 @@ export default function TechStack() {
                             style={{
                               color: isActive
                                 ? `${color}AA`
-                                : "rgba(255,255,255,0.20)",
+                                : "rgba(255,255,255,0.28)",
                             }}
                           >
                             {item}
