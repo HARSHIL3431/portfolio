@@ -339,18 +339,21 @@ export default function AboutSection() {
                 </a>
 
                 {/* Social links */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   {SOCIAL_LINKS.map(({ label, href, icon }) => (
                     <a
                       key={label}
                       href={href}
                       target={href.startsWith("http") ? "_blank" : undefined}
                       rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className="transition-colors duration-300 hover:text-cyan-glow"
-                      style={{ color: "rgba(255,255,255,0.35)" }}
+                      className="flex items-center gap-1.5 transition-colors duration-300 hover:text-cyan-glow"
+                      style={{ color: "rgba(255,255,255,0.45)" }}
                       title={label}
                     >
                       {icon}
+                      <span className="font-mono text-[9px] tracking-[0.12em] uppercase">
+                        {label}
+                      </span>
                     </a>
                   ))}
                 </div>

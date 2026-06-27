@@ -26,18 +26,34 @@ export function CinematicCursor() {
     }
   }, [shouldReduceMotion]);
 
+  // Show/hide cursor when mouse enters/leaves the browser window
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const show = () => setIsVisible(true);
+    const hide = () => setIsVisible(false);
+
+    document.addEventListener("mouseenter", show);
+    document.addEventListener("mouseleave", hide);
+
+    return () => {
+      document.removeEventListener("mouseenter", show);
+      document.removeEventListener("mouseleave", hide);
+    };
+  }, [isVisible]);
+
   if (!isVisible) return null;
 
   return (
     <>
       {/* Inner dot — follows closely */}
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-50 rounded-full"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full"
         style={{
-          width: 6,
-          height: 6,
-          background: "rgba(255, 255, 255, 0.6)",
-          mixBlendMode: "difference",
+          width: 7,
+          height: 7,
+          background: "rgba(0, 212, 240, 0.85)",
+          boxShadow: "0 0 6px rgba(0, 212, 240, 0.4)",
         }}
         animate={{
           x: x - 3,
@@ -52,13 +68,12 @@ export function CinematicCursor() {
       />
       {/* Outer ring — trails behind with softer physics */}
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-50 rounded-full"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] rounded-full"
         style={{
           width: 28,
           height: 28,
-          border: "1px solid rgba(255, 255, 255, 0.12)",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
           background: "transparent",
-          mixBlendMode: "difference",
         }}
         animate={{
           x: x - 14,
@@ -74,3 +89,4 @@ export function CinematicCursor() {
     </>
   );
 }
+

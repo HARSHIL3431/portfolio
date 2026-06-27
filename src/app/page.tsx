@@ -18,50 +18,53 @@ export default function Page() {
       {/* ═══ WHO I AM ═══ Hero — cinematic portrait sequence */}
       <ScrollyCanvas />
 
-      {/* Breathing room — transition from person to work */}
-      <SceneBreath height="12vh" glow glowColor="rgba(0, 212, 240, 0.025)" />
+      {/* All content after hero sits above the hero's fixed overlay (z-10) */}
+      <div className="relative z-20">
+        {/* Breathing room — transition from person to work */}
+        <SceneBreath height="12vh" glow glowColor="rgba(0, 212, 240, 0.025)" />
 
-      {/* ═══ WHO I AM ═══ About — portrait, bio, links */}
-      <AboutSection />
+        {/* ═══ WHO I AM ═══ About — portrait, bio, links */}
+        <AboutSection />
 
-      {/* Breathing room */}
-      <SceneBreath height="8vh" />
+        {/* Breathing room */}
+        <SceneBreath height="8vh" />
 
-      {/* ═══ HOW I THINK ═══ Philosophy & identity */}
-      <NarrativeIntro />
+        {/* ═══ HOW I THINK ═══ Philosophy & identity */}
+        <NarrativeIntro />
 
-      {/* Breathing room */}
-      <SceneBreath height="8vh" />
+        {/* Breathing room */}
+        <SceneBreath height="8vh" />
 
-      {/* ═══ EXPERTISE ═══ What I build */}
-      <ExpertiseSection />
+        {/* ═══ EXPERTISE ═══ What I build */}
+        <ExpertiseSection />
 
-      {/* Breathing room */}
-      <SceneBreath height="8vh" />
+        {/* Breathing room */}
+        <SceneBreath height="8vh" />
 
-      {/* ═══ WHAT I BUILD ═══ Immersive project showcase */}
-      <ResearchArchive />
+        {/* ═══ WHAT I BUILD ═══ Immersive project showcase */}
+        <ResearchArchive />
 
-      {/* Breathing room — shift from projects to capabilities */}
-      <SceneBreath height="10vh" glow glowColor="rgba(232, 168, 124, 0.02)" />
+        {/* Breathing room — shift from projects to capabilities */}
+        <SceneBreath height="10vh" glow glowColor="rgba(232, 168, 124, 0.02)" />
 
-      {/* ═══ CAPABILITIES ═══ Intelligent skill visualization */}
-      <TechStack />
+        {/* ═══ CAPABILITIES ═══ Intelligent skill visualization */}
+        <TechStack />
 
-      {/* Breathing room */}
-      <SceneBreath height="8vh" />
+        {/* Breathing room */}
+        <SceneBreath height="8vh" />
 
-      {/* ═══ EXPERIENCE ═══ Cinematic narrative */}
-      <ExperienceTimeline />
+        {/* ═══ EXPERIENCE ═══ Cinematic narrative */}
+        <ExperienceTimeline />
 
-      {/* Breathing room — transition to intimate closing */}
-      <SceneBreath height="10vh" glow glowColor="rgba(0, 212, 240, 0.02)" />
+        {/* Breathing room — transition to intimate closing */}
+        <SceneBreath height="10vh" glow glowColor="rgba(0, 212, 240, 0.02)" />
 
-      {/* ═══ FUTURE VISION ═══ Brief cinematic coda */}
-      <FutureVision />
+        {/* ═══ FUTURE VISION ═══ Brief cinematic coda */}
+        <FutureVision />
 
-      {/* ═══ CONTACT ═══ Establish connection */}
-      <ContactTerminal />
+        {/* ═══ CONTACT ═══ Establish connection */}
+        <ContactTerminal />
+      </div>
     </>
   )
 }

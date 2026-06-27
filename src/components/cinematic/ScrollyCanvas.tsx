@@ -227,7 +227,7 @@ function HeroOverlay({
                 ease: MOTION.card.ease,
               }}
               className="font-sans text-base md:text-lg leading-relaxed max-w-md"
-              style={{ color: "rgba(255,255,255,0.35)" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               {phase.subtitle}
             </motion.p>
