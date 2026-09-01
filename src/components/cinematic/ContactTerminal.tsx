@@ -486,7 +486,7 @@ export default function ContactTerminal() {
           style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
         >
           <span className="font-mono text-[9px] tracking-widest text-white/20 uppercase">
-            © 2025 Harshil Thakkar
+            © {new Date().getFullYear()} Harshil Thakkar
           </span>
           <span className="font-mono text-[9px] tracking-widest text-white/20 uppercase">
             Designed &amp; built with intention
