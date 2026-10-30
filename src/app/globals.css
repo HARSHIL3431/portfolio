@@ -1,64 +1,41 @@
 @import "tailwindcss";
 
 @theme {
-  /* ─── Color System ─────────────────────────────────────
-   * Blue/Orange cinematic grading — reduced glow ~30%,
-   * more neutral dark space, strategic contrast only.
+  /* ─── AuthKit-inspired Color System ──────────────────
+   * Midnight canvas + frosted glass + luminous typography.
+   * Monochrome palette with a single violet action accent.
    */
-  --color-void: #050505;
-  --color-obsidian: #0a0a0c;
-  --color-ink: #0D0D10;
-  --color-carbon: rgba(20, 20, 22, 0.4);
-  --color-smoke: rgba(255, 255, 255, 0.03);
-  --color-surface-border: rgba(255, 255, 255, 0.05);
+  --color-midnight-canvas: #05060f;
+  --color-midnight-deep: #03040a;
+  --color-steel-plate: #2f343e;
+  --color-fog-veil: #9da7ba;
+  --color-moon-mist: #c7d3ea;
+  --color-frost-glow: #d1e4fa;
+  --color-ice-highlight: #d8ecf8;
+  --color-ice-soft: #98c0ef;
+  --color-pure-white: #ffffff;
+  --color-void-violet: #663af3;
+  --color-blueprint-blue: #b6d9fc;
+  --color-gridline-blue: #3f4959;
 
-  /* Primary accent — cooled cyan, less intensity */
-  --color-cyan-glow: #00D4F0;
-  --color-cyan-glow-ambient: rgba(0, 212, 240, 0.10);
-  --color-cyan-subtle: rgba(0, 212, 240, 0.06);
+  /* Surfaces / translucent fills */
+  --color-surface-frost: rgba(186, 214, 247, 0.03);
+  --color-surface-glass: rgba(5, 6, 15, 0.72);
+  --color-luminous-fill: rgba(199, 211, 234, 0.12);
+  --color-input-fill: rgba(199, 211, 234, 0.06);
+  --color-hairline: rgba(186, 215, 247, 0.12);
 
-  /* Warm accent — cinematic amber */
-  --color-amber-glow: #E8A87C;
-  --color-amber-ambient: rgba(232, 168, 124, 0.08);
-
-  /* Violet accent — for project 3 */
-  --color-violet-glow: #B464FF;
-  --color-violet-ambient: rgba(180, 100, 255, 0.08);
-
-  /* Text hierarchy */
-  --color-text-primary: #F0F0F2;
-  --color-text-secondary: #8A8A93;
-  --color-text-metadata: #5A5A62;
-  --color-text-ghost: rgba(255, 255, 255, 0.15);
-
-  /* ─── Spacing Rhythm ────────────────────────────────── */
-  --spacing-cinematic-sm: 10vh;
-  --spacing-cinematic-md: 15vh;
-  --spacing-cinematic-lg: 25vh;
-  --spacing-cinematic-xl: 35vh;
-  --spacing-breath: 8vh;
-
-  /* ─── Typography ────────────────────────────────────── */
-  --font-heading: var(--font-playfair);
+  /* ─── Typography ──────────────────────────────────── */
+  --font-heading: var(--font-space-grotesk);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 }
 
-/* ─── Z-Index Layering System ─────────────────────────
- * z-bg:          0  — backgrounds, canvases
- * z-atmosphere:  1  — fog, gradients
- * z-particles:   2  — dust, floating particles
- * z-depth:       3  — depth layer elements
- * z-portrait:    5  — portrait / hero canvas
- * z-content:    10  — main content
- * z-foreground: 20  — overlays, film grain
- * z-cursor:     50  — custom cursor
- * z-nav:        60  — navigation
- */
+/* ─── Base ───────────────────────────────────────────── */
 
 :root {
-  background-color: var(--color-void);
-  color: var(--color-text-primary);
+  background-color: var(--color-midnight-canvas);
+  color: var(--color-frost-glow);
   color-scheme: dark;
 }
 
@@ -68,7 +45,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-void);
+  background-color: var(--color-midnight-canvas);
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -77,34 +54,277 @@ body {
   overscroll-behavior: none;
 }
 
-/* ─── GPU compositing hints ───────────────────────────── */
-
-.cinematic-scene-sticky {
-  will-change: opacity, transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-/* Prevent black-screen flash on sticky containers
- * GSAP sets opacity:0 initially; if scroll trigger doesn't fire,
- * this timeout-based fallback ensures content is visible. */
-.cinematic-sticky-fallback {
-  will-change: opacity;
-}
-
-.parallax-layer {
-  will-change: transform;
-}
-
-/* ─── Selection ───────────────────────────────────────── */
-
 ::selection {
-  background-color: rgba(0, 212, 240, 0.15);
-  color: var(--color-cyan-glow);
+  background-color: rgba(186, 215, 247, 0.16);
+  color: var(--color-ice-highlight);
 }
 
-/* ─── Cinematic Keyframes ─────────────────────────────── */
+/* ─── Z-Index Layering ────────────────────────────────
+ * z-atmosphere: 1  — blueprint grid, spotlight, fog
+ * z-content:     2  — page content
+ * z-foreground: 20  — film grain overlays
+ * z-cursor:     50  — custom cursor
+ * z-nav:        60  — navigation
+ */
+
+/* ─── Atmosphere ──────────────────────────────────────── */
+
+/* Blueprint grid — 80px cells, cool hairlines, masked fade */
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(186, 215, 247, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(186, 215, 247, 0.05) 1px, transparent 1px);
+  background-size: 80px 80px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 90% 80% at 50% 0%,
+    #000 30%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 90% 80% at 50% 0%,
+    #000 30%,
+    transparent 78%
+  );
+}
+
+/* Conic spotlight halo — anchors the top of full-bleed sections */
+.spotlight {
+  background: conic-gradient(
+    at 50% -5%,
+    transparent 45%,
+    rgba(124, 145, 182, 0.18) 49%,
+    rgba(124, 145, 182, 0.3) 50%,
+    rgba(124, 145, 182, 0.18) 51%,
+    transparent 55%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    rgba(0, 0, 0, 0.4) 40%,
+    transparent 75%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    rgba(0, 0, 0, 0.4) 40%,
+    transparent 75%
+  );
+}
+
+/* ─── Glass Surfaces ─────────────────────────────────── */
+
+/* Frosted glass card — plate lit from below */
+.glass-card {
+  position: relative;
+  border-radius: 16px;
+  background: rgba(186, 214, 247, 0.03);
+  box-shadow:
+    inset 0 1px 1px rgba(199, 211, 234, 0.12),
+    inset 0 24px 48px rgba(199, 211, 234, 0.05),
+    0 24px 32px rgba(6, 6, 14, 0.7);
+}
+
+/* Deep glass — nearly-opaque midnight panel (form / modality) */
+.glass-panel {
+  position: relative;
+  border-radius: 16px;
+  background: rgba(5, 6, 15, 0.85);
+  box-shadow:
+    inset 0 1px 1px rgba(216, 236, 248, 0.2),
+    inset 0 24px 48px rgba(168, 216, 245, 0.06),
+    0 16px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Inset hairline stroke — the system's border language */
+.hairline {
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.12) inset;
+}
+
+/* ─── Type ────────────────────────────────────────────── */
+
+/* Ice highlight → soft blue vertical fade for the wordmark/headings */
+.text-skywash {
+  background: linear-gradient(0deg, #d8ecf8 0%, #98c0ef 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Eyebrow label — tracked mono caps */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-moon-mist);
+  line-height: 1.2;
+}
+
+/* ─── Buttons ─────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: translateY(0px) scale(0.99);
+}
+
+/* Frost ghost — default primary */
+.btn-primary {
+  background: rgba(186, 214, 247, 0.06);
+  color: var(--color-pure-white);
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.12) inset;
+}
+.btn-primary:hover {
+  background: rgba(186, 214, 247, 0.12);
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.22) inset;
+}
+
+/* Outlined — secondary */
+.btn-outline {
+  background: transparent;
+  color: var(--color-frost-glow);
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.12) inset;
+}
+.btn-outline:hover {
+  color: var(--color-ice-highlight);
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.24) inset;
+}
+
+/* Violet action — the sole chromatic CTA */
+.btn-violet {
+  background: var(--color-void-violet);
+  color: var(--color-pure-white);
+  box-shadow: 0 8px 28px rgba(102, 58, 243, 0.28);
+}
+.btn-violet:hover {
+  background: #7750f5;
+  box-shadow: 0 10px 34px rgba(102, 58, 243, 0.4);
+}
+
+/* ─── Badges / Chips ──────────────────────────────────── */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-moon-mist);
+  background: rgba(199, 211, 234, 0.12);
+  box-shadow:
+    inset 0 1px 1px rgba(199, 211, 234, 0.14),
+    inset 0 0 12px rgba(186, 215, 247, 0.04);
+}
+
+/* Compact chip variant — project cards & metadata rows */
+.chip-sm {
+  padding: 2px 8px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
+
+/* ─── Project Card ──────────────────────────────────────
+ * Restrained hover: brighter hairline + project-tinted accent glow.
+ * --card-accent is set inline per project (accentColor.line).
+ */
+.project-card {
+  transition: box-shadow 0.35s ease;
+}
+.project-card:hover {
+  box-shadow:
+    inset 0 1px 1px rgba(199, 211, 234, 0.18),
+    inset 0 24px 48px rgba(186, 215, 247, 0.06),
+    inset 0 0 0 1px rgba(186, 215, 247, 0.22),
+    0 0 28px -8px var(--card-accent, rgba(186, 215, 247, 0.12));
+}
+
+/* Compact button variant — card actions */
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+/* ─── Icon tile ───────────────────────────────────────── */
+
+.icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: var(--color-frost-glow);
+  background: rgba(186, 214, 247, 0.06);
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.1) inset;
+}
+
+/* ─── Inputs ──────────────────────────────────────────── */
+
+.input-glass {
+  width: 100%;
+  border-radius: 6px;
+  background: rgba(199, 211, 234, 0.06);
+  border: 0;
+  color: var(--color-pure-white);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 12px 14px;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.12) inset;
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+.input-glass::placeholder {
+  color: rgba(199, 211, 234, 0.6);
+}
+.input-glass:focus {
+  box-shadow: 0 0 0 1px rgba(186, 215, 247, 0.24) inset,
+    0 0 20px rgba(186, 215, 247, 0.06);
+  background: rgba(199, 211, 234, 0.08);
+}
+.input-glass-error {
+  box-shadow: 0 0 0 1px rgba(255, 110, 110, 0.4) inset !important;
+  background: rgba(255, 110, 110, 0.04);
+}
+
+/* ─── Sections ────────────────────────────────────────── */
+
+.section-gap {
+  padding-top: clamp(72px, 12vh, 120px);
+  padding-bottom: clamp(72px, 12vh, 120px);
+}
+
+/* ─── Focus / Accessibility ───────────────────────────── */
+
+:focus-visible {
+  outline: 1px solid rgba(186, 215, 247, 0.5);
+  outline-offset: 2px;
+}
+
+/* ─── Keyframes ───────────────────────────────────────── */
 
 @keyframes heroFloat {
   from { transform: translateY(0px); }
@@ -117,17 +337,14 @@ body {
   100% { opacity: 1; }
 }
 
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
-  }
+@keyframes atmosphericPulse {
+  0%, 100% { opacity: 0.03; }
+  50%       { opacity: 0.06; }
+}
+
+@keyframes cardDrift {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-6px); }
 }
 
 @keyframes scrollHintPulse {
@@ -135,92 +352,35 @@ body {
   50%       { opacity: 0.4; height: 20px; }
 }
 
-/* Atmospheric: slow camera-like drift */
-@keyframes subtleDrift {
-  0%   { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(1.5%, -0.8%) scale(1.01); }
-  66%  { transform: translate(-0.8%, 1.2%) scale(1.005); }
-  100% { transform: translate(0, 0) scale(1); }
-}
-
-/* Atmospheric: breathing glow pulse */
-@keyframes atmosphericPulse {
-  0%, 100% { opacity: 0.03; }
-  50%       { opacity: 0.06; }
-}
-
-/* Scene breath: subtle separator fade */
-@keyframes breathFade {
-  0%, 100% { opacity: 0.02; }
-  50%       { opacity: 0.05; }
-}
-
-/* Connection line draw */
-@keyframes lineGrow {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
-}
-
-/* ─── Utility Classes ─────────────────────────────────── */
+/* ─── Utility Animations ──────────────────────────────── */
 
 .animate-blink {
   animation: blink 1s steps(2, start) infinite;
-}
-
-.scroll-hint-line {
-  animation: scrollHintPulse 2.5s ease-in-out infinite;
-}
-
-.animate-drift {
-  animation: subtleDrift 30s ease-in-out infinite;
 }
 
 .animate-breathe {
   animation: atmosphericPulse 8s ease-in-out infinite;
 }
 
-/* Physical-feeling hover lift */
-.hover-lift {
-  transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
-              box-shadow 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+.scroll-hint-line {
+  animation: scrollHintPulse 2.5s ease-in-out infinite;
 }
 
-/* Depth-shift transition class */
-.depth-shift {
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ─── Cinematic Scrollbar ─────────────────────────────── */
+/* ─── Scrollbar ───────────────────────────────────────── */
 
 ::-webkit-scrollbar {
   width: 2px;
   height: 2px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #0A0A0C;
+  background: #07090f;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 240, 0.20);
+  background: rgba(186, 215, 247, 0.18);
   border-radius: 999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 212, 240, 0.35);
-}
-
-/* ─── Focus States (Accessibility) ────────────────────── */
-
-:focus-visible {
-  outline: 1px solid rgba(0, 212, 240, 0.5);
-  outline-offset: 2px;
+  background: rgba(186, 215, 247, 0.32);
 }
 
 /* ─── Reduced Motion ──────────────────────────────────── */
@@ -234,11 +394,5 @@ body {
 
   html {
     scroll-behavior: auto;
-  }
-
-  .animate-drift,
-  .animate-breathe,
-  .scroll-hint-line {
-    animation: none !important;
   }
 }
