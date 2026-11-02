@@ -33,13 +33,19 @@ function ProjectFilters({
   active: FilterValue;
   onChange: (value: FilterValue) => void;
 }) {
+  // Only offer categories that actually contain projects (avoids empty grids).
+  const availableFilters = FILTERS.filter(
+    ({ value }) =>
+      value === "all" || projects.some((project) => project.category === value)
+  );
+
   return (
     <div
       role="group"
       aria-label="Filter projects by category"
       className="mt-10 flex flex-wrap items-center justify-center gap-2 md:mt-12"
     >
-      {FILTERS.map(({ label, value }) => {
+      {availableFilters.map(({ label, value }) => {
         const isActive = active === value;
         return (
           <button
