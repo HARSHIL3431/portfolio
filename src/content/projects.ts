@@ -90,20 +90,19 @@ export const projects: Project[] = [
   {
     id: "03",
     title: "SignalTrace",
-    subtitle: "Details Pending Review",
-    // TODO(review): no source material found in the repository or public GitHub
-    // for SignalTrace — placeholder text only, awaiting owner confirmation.
+    subtitle: "AI-Assisted Pharmacovigilance Workspace",
     philosophy:
-      "[PENDING REVIEW] Add a short project summary — no source material was found for this project yet.",
-    category: "research",
+      "Decision-support workspace for investigating potential drug safety signals from official FDA FAERS reports — statistical detection, evidence exploration, and grounded AI explanations, always with qualified human review in the loop.",
+    category: "ai-ml",
     featured: true,
-    needsReview: true,
-    tags: [],
+    tags: ["Python", "FastAPI", "Next.js", "TypeScript", "PostgreSQL", "pandas", "Groq", "Gemini"],
     status: "ACTIVE",
     accentColor: { primary: "rgba(157,167,186,0.08)", line: "rgba(157,167,186,0.30)", text: "#9DA7BA" },
-    github: null,
-    demo: null,
-    thumbnail: null,
+    architecture:
+      "FDA FAERS drug-event reports → statistical signal detection (PRR, ROR, chi-square, report counts, reporting trends) → evidence exploration and supporting report inspection → case-quality assessment and duplicate triage → grounded AI evidence explanations (Groq) → deterministic regulatory review rules → document intelligence (Gemini) → human review and assessment workflow.",
+    github: "https://github.com/HARSHIL3431/bob-ai-hackathon-visionx",
+    demo: "https://signaltrace-five.vercel.app/",
+    thumbnail: "/images/projects/signaltrace.png",
     screenshots: [],
     metrics: [],
   },
