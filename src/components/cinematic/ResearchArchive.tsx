@@ -387,6 +387,11 @@ function ProjectDetailModal({
 
   return (
     <motion.div
+      // data-lenis-prevent: while the background scroll is locked via
+      // lenis.stop(), Lenis would preventDefault() every wheel/touch event,
+      // killing the modal's own native scrolling. This attribute makes Lenis
+      // ignore events inside the modal so its content scrolls normally.
+      data-lenis-prevent=""
       className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto overscroll-contain p-4 py-10 md:items-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
