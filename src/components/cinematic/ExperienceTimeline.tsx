@@ -1,256 +1,156 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { experience } from "@/content/experience";
 import { certifications } from "@/content/certifications";
-import { GSAP_EASE, SCRUB } from "./cinematicMotion";
-import { useOpacityFallback } from "@/hooks/useOpacityFallback";
 
 export default function ExperienceTimeline() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const metaRef = useRef<HTMLDivElement>(null);
-  const blocksRef = useRef<(HTMLDivElement | null)[]>([]);
-  const credsRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion() ?? false;
 
-  useOpacityFallback(stickyRef, 800, shouldReduceMotion);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || shouldReduceMotion) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let ctx: any = null;
-
-    const init = async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      const trigger = sectionRef.current;
-      if (!trigger) return;
-
-      ctx = gsap.context(() => {
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger,
-            start: "top top",
-            end: `+=${trigger.offsetHeight - window.innerHeight}`,
-            scrub: SCRUB.experience,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        // Fade in scene
-        tl.fromTo(
-          stickyRef.current,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.18 },
-          0
-        );
-
-        // Meta label
-        tl.fromTo(
-          metaRef.current,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.15 },
-          0.05
-        );
-
-        // Narrative blocks — depth-shift entrance
-        blocksRef.current.forEach((block, i) => {
-          if (!block) return;
-          const t = 0.12 + i * 0.28;
-          tl.fromTo(
-            block,
-            { opacity: 0, y: 40, filter: "blur(6px)" },
-            {
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-              duration: 0.3,
-              ease: GSAP_EASE.card,
-            },
-            t
-          );
-        });
-
-        // Credentials section
-        if (credsRef.current) {
-          tl.fromTo(
-            credsRef.current,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.2, ease: GSAP_EASE.card },
-            0.7
-          );
-        }
-
-        // Fade out
-        tl.to(stickyRef.current, { opacity: 0, duration: 0.15 }, 0.88);
-      });
-    };
-
-    init();
-    return () => ctx?.revert();
-  }, [shouldReduceMotion]);
-
-  const baseStyle = shouldReduceMotion ? {} : { opacity: 0 };
-
   return (
-    <section
-      ref={sectionRef}
-      className="relative"
-      style={{
-        height: "320vh",
-        background: 'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.96) 3%, rgba(5,5,5,0.96) 97%, rgba(5,5,5,0) 100%)',
-      }}
-    >
-      <div
-        ref={stickyRef}
-        className="sticky top-0 h-screen overflow-hidden w-full flex flex-col justify-center"
-        style={baseStyle}
-      >
-        {/* Atmospheric */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 65% at 65% 35%, rgba(0,212,240,0.025) 0%, transparent 70%)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-36"
-          style={{ background: "linear-gradient(to bottom, #050505, transparent)" }}
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-36"
-          style={{ background: "linear-gradient(to top, #050505, transparent)" }}
+    <section className="relative section-gap">
+      <Container className="max-w-7xl px-6 md:px-12 xl:px-24">
+        <SectionHeader
+          eyebrow="Experience"
+          title="Career & Education"
+          statement="From research foundations to production systems — how I build, learn, and ship."
         />
 
-        <Container className="max-w-7xl px-6 md:px-12 xl:px-24 relative z-10">
-          <div className="flex flex-col gap-10 md:gap-14">
-            {/* Section label */}
-            <div
-              ref={metaRef}
-              className="font-mono text-[9px] tracking-widest uppercase"
-              style={{ color: "rgba(255,255,255,0.15)", ...baseStyle }}
-            >
-              /// EXPERIENCE
-            </div>
+        {/* Timeline */}
+        <div className="relative mt-14 flex flex-col gap-10 md:mt-20 md:gap-12">
+          {/* Vertical rail */}
+          <div
+            className="absolute left-1.5 top-0 bottom-0 w-px md:left-[10rem]"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(186,215,247,0.16), rgba(102,58,243,0.35), rgba(186,215,247,0.16))",
+            }}
+            aria-hidden="true"
+          />
 
-            {/* Experience narrative blocks */}
-            <div className="flex flex-col gap-14 md:gap-18">
-              {experience.map((item, index) => {
-                const isWork = item.type === "work";
+          {experience.map((item, index) => {
+            const isWork = item.type === "work";
 
-                return (
-                  <div
-                    key={index}
-                    ref={(el) => {
-                      blocksRef.current[index] = el;
+            return (
+              <motion.div
+                key={item.org + item.role}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
+                whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: false, margin: "-12%" }}
+                transition={{
+                  duration: 0.7,
+                  delay: shouldReduceMotion ? 0 : index * 0.08,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="relative grid grid-cols-1 gap-7 md:grid-cols-12 md:gap-10"
+              >
+                {/* Node dot */}
+                <span
+                  className="absolute left-1.5 top-2 h-[3px] w-[3px] -translate-x-1/2 rounded-full md:left-[10rem]"
+                  style={{
+                    background: isWork ? "rgba(102,58,243,0.9)" : "rgba(186,215,247,0.5)",
+                    boxShadow: isWork
+                      ? "0 0 10px rgba(102,58,243,0.6)"
+                      : "none",
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Identity */}
+                <div className="flex flex-col gap-2 pl-8 md:col-span-4 md:pl-0 md:pr-10 md:text-right">
+                  <span className="eyebrow !text-[10px]">
+                    {isWork ? "WORK" : "EDUCATION"} · {index + 1}
+                  </span>
+                  <h3 className="font-heading text-xl font-medium leading-tight text-ice-highlight md:text-2xl">
+                    {item.role}
+                  </h3>
+                  <p className="font-mono text-[11px] tracking-widest uppercase text-moon-mist">
+                    {item.org}
+                  </p>
+                  <p
+                    className="font-mono text-[10px] tracking-widest uppercase"
+                    style={{
+                      color: isWork ? "rgba(216,236,248,0.7)" : "rgba(157,167,186,0.7)",
                     }}
-                    className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16"
-                    style={baseStyle}
                   >
-                    {/* Left: Identity */}
-                    <div className="lg:col-span-4 flex flex-col gap-3">
-                      <div
-                        className="font-mono text-[9px] tracking-widest uppercase"
-                        style={{
-                          color: isWork
-                            ? "rgba(0,212,240,0.5)"
-                            : "rgba(255,255,255,0.15)",
-                        }}
-                      >
-                        /// CHAPTER {String(index + 1).padStart(2, "0")} / {item.org.toUpperCase()}
+                    {item.period}
+                  </p>
+                </div>
+
+                {/* Narrative */}
+                <div className="md:col-span-8">
+                  <div className="glass-card hairline flex flex-col gap-5 p-6 md:p-7">
+                    <p className="font-sans text-sm leading-relaxed text-frost-glow/80">
+                      {item.description}
+                    </p>
+                    {[
+                      { label: "Challenge", value: item.challenge },
+                      { label: "Approach", value: item.approach },
+                      { label: "Impact", value: item.impact, highlight: true },
+                    ].map(({ label, value, highlight }) => (
+                      <div key={label} className="flex flex-col gap-1">
+                        <span
+                          className="font-mono text-[9px] tracking-widest uppercase"
+                          style={{
+                            color: highlight
+                              ? isWork
+                                ? "rgba(102,58,243,0.9)"
+                                : "rgba(216,236,248,0.8)"
+                              : "rgba(157,167,186,0.8)",
+                          }}
+                        >
+                          {label}
+                        </span>
+                        <p className="font-sans text-sm leading-relaxed text-moon-mist">
+                          {value}
+                        </p>
                       </div>
-
-                      <h3 className="font-heading text-xl md:text-2xl text-white leading-tight">
-                        {item.role}
-                      </h3>
-
-                      <p
-                        className="font-mono text-[10px] tracking-widest uppercase"
-                        style={{
-                          color: isWork ? "#00D4F0" : "#8A8A93",
-                        }}
-                      >
-                        {item.period}
-                      </p>
-                    </div>
-
-                    {/* Right: Narrative — Challenge → Approach → Impact */}
-                    <div className="lg:col-span-8">
-                      <div
-                        className="border border-white/5 p-5 md:p-7 flex flex-col gap-5"
-                        style={{
-                          background: "rgba(5,5,5,0.4)",
-                          backdropFilter: "blur(8px)",
-                        }}
-                      >
-                        {[
-                          { label: "CHALLENGE", value: item.challenge },
-                          { label: "APPROACH", value: item.approach },
-                          {
-                            label: "IMPACT",
-                            value: item.impact,
-                            highlight: true,
-                          },
-                        ].map(({ label, value, highlight }) => (
-                          <div key={label}>
-                            <span
-                              className="font-mono text-[9px] tracking-widest block mb-1.5 uppercase"
-                              style={{
-                                color: highlight
-                                  ? isWork
-                                    ? "#00D4F0"
-                                    : "#E8A87C"
-                                  : "rgba(255,255,255,0.22)",
-                              }}
-                            >
-                              {label}:
-                            </span>
-                            <p className="font-sans text-sm text-white/48 leading-relaxed">
-                              {value}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                );
-              })}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Credentials */}
+        <div className="mt-16 md:mt-20">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+            whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-12%" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col gap-6"
+          >
+            <div className="flex items-center gap-4">
+              <span className="eyebrow whitespace-nowrap">Credentials</span>
+              <span
+                className="h-px flex-1"
+                style={{ background: "rgba(186,215,247,0.08)" }}
+              />
             </div>
 
-            {/* Credentials — compact horizontal */}
-            <div ref={credsRef} className="pt-8 border-t border-white/5" style={baseStyle}>
-              <div className="font-mono text-[9px] tracking-widest uppercase mb-6" style={{ color: "rgba(255,255,255,0.20)" }}>
-                /// CREDENTIALS
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {certifications.map((cert, i) => (
-                  <div key={i} className="flex flex-col gap-2 border-l border-white/5 pl-4">
-                    <span
-                      className="font-mono text-[9px] tracking-widest uppercase"
-                      style={{ color: "#00D4F0", opacity: 0.6 }}
-                    >
-                      {cert.issuer}
-                    </span>
-                    <h4 className="font-heading text-base text-white/80">
-                      {cert.name}
-                    </h4>
-                    <span className="font-mono text-[9px] text-white/20 uppercase">
-                      {cert.date} // {cert.credentialId}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {certifications.map((cert) => (
+                <div
+                  key={cert.credentialId}
+                  className="glass-card hairline flex flex-col gap-2 p-5"
+                >
+                  <span className="eyebrow !text-[9px]">{cert.issuer}</span>
+                  <h4 className="font-heading text-base font-medium leading-snug text-ice-highlight">
+                    {cert.name}
+                  </h4>
+                  <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-fog-veil/70">
+                    {`${cert.date} // ${cert.credentialId}`}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
-        </Container>
-      </div>
+          </motion.div>
+        </div>
+      </Container>
     </section>
   );
 }
