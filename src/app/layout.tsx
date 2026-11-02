@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { ScrollProvider } from "@/providers/ScrollProvider";
 import { FilmGrain } from "@/components/atmospheric/FilmGrain";
-import { AtmosphericFog } from "@/components/atmospheric/AtmosphericFog";
 import { DustParticles } from "@/components/atmospheric/DustParticles";
+import { BackgroundAtmosphere } from "@/components/atmospheric/BackgroundAtmosphere";
 import { CinematicCursor } from "@/components/interaction/CinematicCursor";
 
-const playfair = Playfair_Display({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-space-grotesk",
+  weight: ["400", "500", "600", "700"],
 });
 
 const inter = Inter({
@@ -45,14 +46,6 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Harshil Thakkar",
     url: "https://harshilthakkar.dev/",
-    images: [
-      {
-        url: "/images/profile/hero-harshil.png",
-        width: 1200,
-        height: 630,
-        alt: "Harshil Thakkar — AI/ML Engineer",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -63,7 +56,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#050505",
+  themeColor: "#05060f",
 };
 
 export default function RootLayout({
@@ -74,7 +67,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}
     >
       <head>
         <script
@@ -103,7 +96,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased selection:bg-cyan-glow/20 selection:text-cyan-glow bg-void text-text-primary relative overflow-x-hidden min-h-screen cursor-none">
+      <body className="antialiased selection:bg-[rgba(186,215,247,0.16)] bg-midnight-canvas text-frost-glow relative overflow-x-hidden min-h-screen cursor-none">
         <noscript>
           <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
             <h1>Harshil Thakkar — AI/ML Engineer</h1>
@@ -117,7 +110,7 @@ export default function RootLayout({
           </div>
         </noscript>
         {/* Atmospheric depth layers (back to front) */}
-        <AtmosphericFog />
+        <BackgroundAtmosphere />
         <DustParticles />
         <FilmGrain />
 

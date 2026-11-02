@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 import { useState } from "react";
 import { useLenis } from "lenis/react";
 
@@ -11,23 +11,13 @@ const NAV_LINKS = [
 ];
 
 export default function MinimalNav() {
-  const { scrollY, scrollYProgress } = useScroll();
+  const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const lenis = useLenis();
 
-  // Narrow top progress bar
-  const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-
-  // Nav fades in after hero section — don't compete with portrait
-  const navOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.04, 0.08],
-    [0.3, 0.6, 1]
-  );
-
   useMotionValueEvent(scrollY, "change", (latest) => {
-    if (latest > 80 && !scrolled) setScrolled(true);
-    else if (latest <= 80 && scrolled) setScrolled(false);
+    if (latest > 24 && !scrolled) setScrolled(true);
+    else if (latest <= 24 && scrolled) setScrolled(false);
   });
 
   const handleNavClick = (
@@ -37,7 +27,7 @@ export default function MinimalNav() {
     e.preventDefault();
     if (lenis) {
       lenis.scrollTo(id, {
-        duration: 2,
+        duration: 1.6,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       });
     } else {
@@ -46,77 +36,45 @@ export default function MinimalNav() {
   };
 
   return (
-    <>
-      {/* Cinematic scroll progress bar — top of viewport */}
-      <div className="fixed top-0 left-0 right-0 h-px z-[60] bg-white/[0.02]">
-        <motion.div
-          className="h-full origin-left"
-          style={{
-            width: progressWidth,
-            background:
-              "linear-gradient(to right, rgba(0,212,240,0.5), rgba(0,212,240,0.15))",
-          }}
-        />
-      </div>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 px-6 md:px-12 xl:px-24 py-4 ${
+        scrolled
+          ? "bg-midnight-canvas/80 backdrop-blur-md shadow-[0_1px_0_rgba(186,215,247,0.08)]"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="flex justify-between items-center max-w-7xl mx-auto">
+        {/* Identity mark */}
+        <a
+          href="#top"
+          onClick={(e) => handleNavClick(e, "#top")}
+          className="flex items-center gap-3 group"
+        >
+          <span className="block h-1.5 w-1.5 rounded-full bg-void-violet shadow-[0_0_8px_rgba(102,58,243,0.5)] transition-transform duration-300 group-hover:scale-125" />
+          <span className="font-mono tracking-widest text-[10px] text-frost-glow/60 group-hover:text-frost-glow transition-colors duration-300">
+            HARSHIL
+          </span>
+        </a>
 
-      {/* Nav bar */}
-      <motion.nav
-        initial={{
-          backgroundColor: "rgba(5, 5, 5, 0)",
-          borderBottomColor: "rgba(255, 255, 255, 0)",
-        }}
-        animate={{
-          backgroundColor: scrolled
-            ? "rgba(5, 5, 5, 0.85)"
-            : "rgba(5, 5, 5, 0)",
-          borderBottomColor: scrolled
-            ? "rgba(255, 255, 255, 0.04)"
-            : "rgba(255, 255, 255, 0)",
-        }}
-        style={{ opacity: navOpacity }}
-        transition={{ duration: 0.4 }}
-        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 xl:px-24 py-5 ${
-          scrolled ? "backdrop-blur-md border-b" : ""
-        }`}
-      >
-        <div className="flex justify-between items-center max-w-7xl mx-auto">
-          {/* Identity mark */}
-          <div className="flex items-center gap-3">
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full"
-              style={{
-                background: "rgba(0,212,240,0.5)",
-                boxShadow: "0 0 6px rgba(0,212,240,0.3)",
-              }}
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <span className="font-mono tracking-widest text-[10px] text-white/25">
-              HARSHIL
-            </span>
-          </div>
-
-          {/* Nav links */}
-          <div className="flex gap-8 font-mono tracking-widest text-[9px] text-white/20">
-            {NAV_LINKS.map(({ label, href }) => (
-              <a
-                key={label}
-                id={`nav-${label.toLowerCase()}`}
-                href={href}
-                onClick={(e) => handleNavClick(e, href)}
-                className="relative transition-colors duration-250 hover:text-white/80 focus-visible:text-white/80 group"
-              >
-                {label}
-                {/* Underline reveal */}
-                <span
-                  className="absolute -bottom-0.5 left-0 h-px w-0 group-hover:w-full transition-all duration-300"
-                  style={{ background: "rgba(0,212,240,0.35)" }}
-                />
-              </a>
-            ))}
-          </div>
+        {/* Nav links */}
+        <div className="flex gap-8 font-mono tracking-widest text-[10px]">
+          {NAV_LINKS.map(({ label, href }) => (
+            <a
+              key={label}
+              id={`nav-${label.toLowerCase()}`}
+              href={href}
+              onClick={(e) => handleNavClick(e, href)}
+              className="relative text-moon-mist/70 transition-colors duration-250 hover:text-ice-highlight focus-visible:text-ice-highlight group"
+            >
+              {label}
+              <span
+                className="absolute -bottom-0.5 left-0 h-px w-0 group-hover:w-full transition-all duration-300"
+                style={{ background: "rgba(186,215,247,0.4)" }}
+              />
+            </a>
+          ))}
         </div>
-      </motion.nav>
-    </>
+      </div>
+    </nav>
   );
 }

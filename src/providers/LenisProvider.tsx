@@ -1,48 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { ReactLenis, useLenis } from "lenis/react";
-
-function LenisTicker() {
-  const lenis = useLenis();
-  const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (!lenis) return;
-
-    let gsapModule: typeof import("gsap") | null = null;
-    let stModule: typeof import("gsap/ScrollTrigger") | null = null;
-
-    const setup = async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      gsapModule = { gsap } as unknown as typeof import("gsap");
-      stModule = { ScrollTrigger } as unknown as typeof import("gsap/ScrollTrigger");
-
-      // Sync Lenis scroll events to ScrollTrigger
-      lenis.on("scroll", ScrollTrigger.update);
-
-      // Replace GSAP ticker with Lenis RAF loop
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-      });
-
-      // Prevent GSAP from adding lag smoothing that breaks Lenis
-      gsap.ticker.lagSmoothing(0);
-    };
-
-    setup();
-
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      // Cleanup will happen via lenis destroy
-    };
-  }, [lenis]);
-
-  return null;
-}
+import { ReactLenis } from "lenis/react";
 
 export function LenisProvider({ children }: { children: React.ReactNode }) {
   return (
@@ -57,7 +15,6 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
         infinite: false,
       }}
     >
-      <LenisTicker />
       {children}
     </ReactLenis>
   );

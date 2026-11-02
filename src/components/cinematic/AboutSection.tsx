@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
-import { GSAP_EASE, SCRUB } from "./cinematicMotion";
-import { useOpacityFallback } from "@/hooks/useOpacityFallback";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { IconTile } from "@/components/ui/IconTile";
 
 const FOCUS_AREAS = [
   "Machine Learning",
@@ -46,299 +45,88 @@ const SOCIAL_LINKS = [
   },
 ];
 
-function PortraitImage() {
-  const [imgError, setImgError] = useState(false);
-
-  if (imgError) {
-    return (
-      <div
-        className="w-full aspect-[4/5] flex items-center justify-center"
-        style={{
-          background: "linear-gradient(135deg, #1a1a2e, #16213e)",
-          borderRadius: "2px",
-        }}
-      >
-        <span className="font-mono text-xs text-white/30 tracking-widest uppercase">
-          Portrait
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative w-full aspect-[4/5] overflow-hidden" style={{ borderRadius: "2px" }}>
-      {/* Warm orange glow behind portrait */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(232,168,124,0.12) 0%, transparent 70%)",
-        }}
-      />
-      <img
-        src="/images/profile/hero-harshil.png"
-        alt="Harshil Thakkar — AI/ML Engineer portrait"
-        className="relative z-10 w-full h-full object-cover"
-        style={{ borderRadius: "2px" }}
-        onError={() => setImgError(true)}
-      />
-      {/* Subtle border glow */}
-      <div
-        className="absolute inset-0 z-20 pointer-events-none"
-        style={{
-          borderRadius: "2px",
-          boxShadow: "inset 0 0 40px rgba(232,168,124,0.06), inset 0 0 80px rgba(0,0,0,0.3)",
-        }}
-      />
-    </div>
-  );
-}
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+};
 
 export default function AboutSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const portraitRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion() ?? false;
 
-  useOpacityFallback(stickyRef, 800, shouldReduceMotion);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || shouldReduceMotion) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let ctx: any = null;
-
-    const init = async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      const trigger = sectionRef.current;
-      if (!trigger) return;
-
-      ctx = gsap.context(() => {
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger,
-            start: "top top",
-            end: `+=${trigger.offsetHeight - window.innerHeight}`,
-            scrub: SCRUB.narrative,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        // Scene fade-in
-        tl.fromTo(
-          stickyRef.current,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.2, ease: "power2.out" },
-          0
-        );
-
-        // Ambient glow
-        tl.fromTo(
-          glowRef.current,
-          { opacity: 0, scale: 0.8 },
-          { opacity: 1, scale: 1, duration: 0.4, ease: "power1.inOut" },
-          0.05
-        );
-
-        // Portrait — depth-shift from left
-        tl.fromTo(
-          portraitRef.current,
-          { opacity: 0, x: -40, filter: "blur(6px)" },
-          {
-            opacity: 1,
-            x: 0,
-            filter: "blur(0px)",
-            duration: 0.35,
-            ease: GSAP_EASE.card,
-          },
-          0.1
-        );
-
-        // Content — depth-shift from right
-        tl.fromTo(
-          contentRef.current,
-          { opacity: 0, x: 40, filter: "blur(6px)" },
-          {
-            opacity: 1,
-            x: 0,
-            filter: "blur(0px)",
-            duration: 0.35,
-            ease: GSAP_EASE.card,
-          },
-          0.15
-        );
-
-        // Scene fade-out
-        tl.to(
-          stickyRef.current,
-          { opacity: 0, y: -20, duration: 0.2 },
-          0.82
-        );
-      });
-    };
-
-    init();
-    return () => ctx?.revert();
-  }, [shouldReduceMotion]);
-
-  const baseStyle = shouldReduceMotion ? {} : { opacity: 0 };
+  const initial = shouldReduceMotion ? false : "hidden";
+  const animate = shouldReduceMotion ? undefined : "show";
 
   return (
-    <section
-      id="about"
-      ref={sectionRef}
-      className="relative"
-      style={{
-        height: "280vh",
-        background:
-          "linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.96) 3%, rgba(5,5,5,0.96) 97%, rgba(5,5,5,0) 100%)",
-      }}
-    >
-      <div
-        ref={stickyRef}
-        className="sticky top-0 h-screen overflow-hidden w-full flex flex-col justify-center"
-        style={baseStyle}
-      >
-        {/* Atmospheric glow */}
-        <div
-          ref={glowRef}
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 65% 55% at 35% 50%, rgba(232,168,124,0.03) 0%, transparent 60%), radial-gradient(ellipse 40% 40% at 65% 45%, rgba(0,212,240,0.02) 0%, transparent 60%)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-36"
-          style={{ background: "linear-gradient(to bottom, #050505 0%, transparent 100%)" }}
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-36"
-          style={{ background: "linear-gradient(to top, #050505 0%, transparent 100%)" }}
-        />
+    <section id="about" className="relative section-gap">
+      <Container className="max-w-7xl px-6 md:px-12 xl:px-24">
+        <motion.div
+          variants={fadeUp}
+          initial={initial}
+          animate={animate}
+          viewport={{ once: false, margin: "-15%" }}
+          transition={shouldReduceMotion ? { duration: 0.01 } : undefined}
+        >
+          <SectionHeader
+            eyebrow="About"
+            title="Who I Am"
+            statement="I am an AI & Machine Learning student passionate about building intelligent systems that solve real-world problems. Currently pursuing B.Tech in Artificial Intelligence and Machine Learning at CHARUSAT."
+          />
+        </motion.div>
 
-        <Container className="max-w-7xl px-6 md:px-12 xl:px-24 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-20 items-center">
-            {/* Left — Portrait */}
-            <div
-              ref={portraitRef}
-              className="md:col-span-5"
-              style={baseStyle}
-            >
-              <PortraitImage />
-            </div>
-
-            {/* Right — Content */}
-            <div
-              ref={contentRef}
-              className="md:col-span-7 flex flex-col gap-6"
-              style={baseStyle}
-            >
-              {/* Section label */}
-              <p
-                className="font-mono text-[10px] tracking-[0.5em] uppercase"
-                style={{ color: "#00D4F0" }}
-              >
-                /// ABOUT
-              </p>
-
-              {/* Name */}
-              <h2
-                className="font-heading leading-[0.95] tracking-tight text-white"
-                style={{ fontSize: "clamp(2.4rem, 5vw, 4.5rem)" }}
-              >
-                Harshil Thakkar
-              </h2>
-
-              {/* Role badge */}
-              <div className="flex">
-                <span
-                  className="font-mono text-[10px] tracking-widest uppercase px-4 py-1.5 border"
-                  style={{
-                    color: "#00D4F0",
-                    borderColor: "rgba(0,212,240,0.25)",
-                    backgroundColor: "rgba(0,212,240,0.06)",
-                  }}
-                >
-                  AI / ML Engineer
-                </span>
+        <div className="mt-14 grid grid-cols-1 gap-6 lg:mt-20 lg:grid-cols-12 lg:gap-10">
+          {/* ─── Glass Identity / Engineering Card ─── */}
+          <motion.div
+            variants={fadeUp}
+            initial={initial}
+            animate={animate}
+            viewport={{ once: false, margin: "-15%" }}
+            className="lg:col-span-5"
+          >
+            <div className="glass-card hairline flex h-full flex-col gap-6 p-6 md:p-8">
+              <div className="flex items-center gap-4">
+                <IconTile size={56}>
+                  <span className="font-heading text-xl font-semibold text-ice-highlight">
+                    HT
+                  </span>
+                </IconTile>
+                <div className="flex flex-col gap-1">
+                  <span className="font-heading text-xl font-medium text-ice-highlight">
+                    Harshil Thakkar
+                  </span>
+                  <span className="eyebrow !text-[10px] !tracking-[0.2em] text-moon-mist/80">
+                    AI / ML Engineer
+                  </span>
+                </div>
               </div>
 
-              {/* Bio */}
-              <p
-                className="font-sans text-sm md:text-base leading-relaxed max-w-lg"
-                style={{ color: "rgba(255,255,255,0.50)" }}
-              >
-                I am an AI & Machine Learning student passionate about building
-                intelligent systems that solve real-world problems. Currently
-                pursuing B.Tech in Artificial Intelligence and Machine Learning
-                at CHARUSAT.
-              </p>
-
-              {/* Focus area pills */}
               <div className="flex flex-wrap gap-2">
                 {FOCUS_AREAS.map((area) => (
-                  <span
-                    key={area}
-                    className="font-mono text-[9px] tracking-widest uppercase border px-3 py-1 transition-colors duration-300 hover:bg-cyan-glow/10 hover:border-cyan-glow/40"
-                    style={{
-                      color: "rgba(255,255,255,0.40)",
-                      borderColor: "rgba(255,255,255,0.08)",
-                    }}
-                  >
+                  <span key={area} className="chip">
                     {area}
                   </span>
                 ))}
               </div>
 
-              {/* Separator */}
               <div
                 className="h-px w-full"
                 style={{
                   background:
-                    "linear-gradient(to right, rgba(255,255,255,0.08), rgba(255,255,255,0.02), transparent)",
+                    "linear-gradient(to right, rgba(186,215,247,0.12), transparent)",
                 }}
               />
 
-              {/* Resume + Social row */}
               <div className="flex flex-wrap items-center gap-5">
-                {/* Resume button */}
                 <a
                   id="about-resume-btn"
                   href="/resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   download
-                  className="font-mono text-[10px] tracking-widest uppercase px-5 py-2.5 border relative overflow-hidden group hover-lift transition-all duration-300"
                   aria-label="Download Resume PDF"
-                  style={{
-                    color: "#fff",
-                    borderColor: "rgba(0,212,240,0.2)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(0,212,240,0.5)";
-                    e.currentTarget.style.boxShadow = "0 0 20px rgba(0,212,240,0.08)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(0,212,240,0.2)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
+                  className="btn btn-primary"
                 >
-                  <span className="relative z-10">Download Resume ↗</span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-                    style={{
-                      background: "linear-gradient(to right, rgba(0,212,240,0.04), transparent)",
-                    }}
-                  />
+                  Resume ↗
                 </a>
-
-                {/* Social links */}
                 <div className="flex items-center gap-5">
                   {SOCIAL_LINKS.map(({ label, href, icon }) => (
                     <a
@@ -346,12 +134,11 @@ export default function AboutSection() {
                       href={href}
                       target={href.startsWith("http") ? "_blank" : undefined}
                       rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className="flex items-center gap-1.5 transition-colors duration-300 hover:text-cyan-glow"
-                      style={{ color: "rgba(255,255,255,0.45)" }}
                       title={label}
+                      className="flex items-center gap-1.5 text-moon-mist/70 transition-colors duration-300 hover:text-ice-highlight"
                     >
                       {icon}
-                      <span className="font-mono text-[9px] tracking-[0.12em] uppercase">
+                      <span className="font-mono text-[10px] tracking-[0.15em] uppercase">
                         {label}
                       </span>
                     </a>
@@ -359,9 +146,79 @@ export default function AboutSection() {
                 </div>
               </div>
             </div>
+          </motion.div>
+
+          {/* ─── Narrative — professional identity + personality ─── */}
+          <div className="flex flex-col gap-6 lg:col-span-7">
+            <motion.p
+              variants={fadeUp}
+              initial={initial}
+              animate={animate}
+              viewport={{ once: false, margin: "-15%" }}
+              className="font-sans text-base leading-7 text-frost-glow/90 md:text-lg"
+            >
+              I design and build machine learning systems at the intersection of
+              research and production engineering. My work spans perception,
+              language, and real-time inference — I care about the moment when a
+              model stops being a prototype and starts being something people
+              rely on.
+            </motion.p>
+
+            <motion.p
+              variants={fadeUp}
+              initial={initial}
+              animate={animate}
+              viewport={{ once: false, margin: "-15%" }}
+              className="border-l-2 pl-4 font-sans text-base italic leading-7 text-moon-mist"
+              style={{ borderColor: "rgba(186,215,247,0.14)" }}
+            >
+              &ldquo;There is a beautiful vulnerability in watching a system try
+              to understand a world it has never touched.&rdquo;
+            </motion.p>
+
+            <motion.p
+              variants={fadeUp}
+              initial={initial}
+              animate={animate}
+              viewport={{ once: false, margin: "-15%" }}
+              className="font-sans text-base leading-7 text-frost-glow/80"
+            >
+              I&apos;m drawn to problems where the constraints are interesting —
+              low-latency inference on constrained hardware, diffusion models
+              running in a browser, distributed training without the cloud. The
+              next chapter is about making AI systems that are not just
+              powerful, but trustworthy, transparent, and accessible.
+            </motion.p>
+
+            <motion.div
+              variants={fadeUp}
+              initial={initial}
+              animate={animate}
+              viewport={{ once: false, margin: "-15%" }}
+              className="mt-2 flex flex-wrap gap-3 pt-6"
+              style={{ borderTop: "1px solid rgba(186,215,247,0.08)" }}
+            >
+              {[
+                { label: "03 PROJECTS", accent: true },
+                { label: "AI SYSTEMS", accent: false },
+                { label: "INDIA · REMOTE", accent: false },
+              ].map(({ label, accent }) => (
+                <span
+                  key={label}
+                  className="eyebrow !text-[10px]"
+                  style={{
+                    color: accent
+                      ? "rgba(216,236,248,0.8)"
+                      : "rgba(157,167,186,0.7)",
+                  }}
+                >
+                  [{label}]
+                </span>
+              ))}
+            </motion.div>
           </div>
-        </Container>
-      </div>
+        </div>
+      </Container>
     </section>
   );
 }

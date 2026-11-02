@@ -1,33 +1,100 @@
 "use client";
 
-import { useRef, useEffect, useState, useMemo } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { projects } from "@/content/projects";
-import { SCRUB } from "./cinematicMotion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useLenis } from "lenis/react";
+import {
+  CATEGORY_LABELS,
+  projects,
+  type Project,
+  type ProjectCategory,
+} from "@/content/projects";
+import { Container } from "@/components/layout/Container";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { cn } from "@/lib/utils";
 
-/* ─── Project Thumbnail ────────────────────────────────── */
-function ProjectThumbnail({
-  src,
-  alt,
-  accentColor,
+/* ─── Filters ─────────────────────────────────────────── */
+
+type FilterValue = ProjectCategory | "all";
+
+const FILTERS: { label: string; value: FilterValue }[] = [
+  { label: "All", value: "all" },
+  { label: "AI / ML", value: "ai-ml" },
+  { label: "Cybersecurity", value: "cybersecurity" },
+  { label: "Research", value: "research" },
+  { label: "Full Stack", value: "full-stack" },
+  { label: "Computer Vision", value: "computer-vision" },
+];
+
+function ProjectFilters({
+  active,
+  onChange,
 }: {
-  src: string;
-  alt: string;
-  accentColor: string;
+  active: FilterValue;
+  onChange: (value: FilterValue) => void;
 }) {
+  // Only offer categories that actually contain projects (avoids empty grids).
+  const availableFilters = FILTERS.filter(
+    ({ value }) =>
+      value === "all" || projects.some((project) => project.category === value)
+  );
+
+  return (
+    <div
+      role="group"
+      aria-label="Filter projects by category"
+      className="mt-10 flex flex-wrap items-center justify-center gap-2 md:mt-12"
+    >
+      {availableFilters.map(({ label, value }) => {
+        const isActive = active === value;
+        return (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={isActive}
+            onClick={() => onChange(value)}
+            className={cn(
+              "rounded-full px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-300",
+              isActive
+                ? "text-pure-white"
+                : "text-moon-mist/70 hover:text-ice-highlight"
+            )}
+            style={
+              isActive
+                ? {
+                    background: "rgba(102,58,243,0.18)",
+                    boxShadow: "0 0 0 1px rgba(147,113,255,0.45) inset",
+                  }
+                : {
+                    background: "rgba(199,211,234,0.04)",
+                    boxShadow: "0 0 0 1px rgba(186,215,247,0.10) inset",
+                  }
+            }
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Project Media (image with graceful fallback) ────── */
+
+function ProjectMedia({ src, alt }: { src: string | null; alt: string }) {
   const [imgError, setImgError] = useState(false);
 
-  if (imgError) {
+  if (imgError || !src) {
     return (
       <div
-        className="w-full flex items-center justify-center"
+        className="flex w-full items-center justify-center"
         style={{
           aspectRatio: "16/9",
-          background: "linear-gradient(135deg, #1a1a2e, #16213e)",
-          borderRadius: "2px",
+          background:
+            "linear-gradient(135deg, rgba(35,38,62,0.4), rgba(22,33,62,0.2))",
         }}
       >
-        <span className="font-mono text-xs text-white/30 tracking-widest uppercase">
+        <span className="px-4 text-center font-mono text-xs tracking-widest uppercase text-frost-glow/30">
           {alt}
         </span>
       </div>
@@ -37,694 +104,577 @@ function ProjectThumbnail({
   return (
     <div
       className="relative w-full overflow-hidden"
-      style={{ aspectRatio: "16/9", borderRadius: "2px" }}
+      style={{ aspectRatio: "16/9" }}
     >
       <img
         src={src}
         alt={alt}
-        className="w-full h-full object-cover"
-        style={{ borderRadius: "2px" }}
+        loading="lazy"
+        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         onError={() => setImgError(true)}
       />
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="pointer-events-none absolute inset-0"
         style={{
-          boxShadow: `inset 0 0 30px ${accentColor}10, inset 0 -20px 40px rgba(5,5,5,0.6)`,
-          borderRadius: "2px",
+          background:
+            "linear-gradient(to top, rgba(5,6,15,0.6), transparent 55%)",
         }}
       />
     </div>
   );
 }
 
-/* ─── Screenshot Gallery ───────────────────────────────── */
-function ScreenshotGallery({
-  screenshots,
-  accentColor,
-}: {
-  screenshots: string[];
-  accentColor: string;
-}) {
+/* ─── Screenshot gallery strip (detail view) ──────────── */
+
+function GalleryStrip({ screenshots }: { screenshots: string[] }) {
+  const [failed, setFailed] = useState<Record<number, boolean>>({});
+
   if (!screenshots || screenshots.length === 0) return null;
 
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-      {screenshots.map((src, i) => (
-        <ScreenshotThumb key={i} src={src} index={i} accentColor={accentColor} />
-      ))}
-    </div>
-  );
-}
-
-function ScreenshotThumb({
-  src,
-  index,
-  accentColor,
-}: {
-  src: string;
-  index: number;
-  accentColor: string;
-}) {
-  const [imgError, setImgError] = useState(false);
-
-  if (imgError) {
-    return (
-      <div
-        className="flex-shrink-0 flex items-center justify-center"
-        style={{
-          width: "120px",
-          height: "75px",
-          background: "linear-gradient(135deg, #1a1a2e, #16213e)",
-          borderRadius: "2px",
-          border: "1px solid rgba(255,255,255,0.05)",
-        }}
-      >
-        <span className="font-mono text-[8px] text-white/20">IMG {index + 1}</span>
-      </div>
-    );
-  }
-
-  return (
     <div
-      className="flex-shrink-0 overflow-hidden transition-all duration-300"
-      style={{
-        width: "120px",
-        height: "75px",
-        borderRadius: "2px",
-        border: "1px solid rgba(255,255,255,0.05)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = `${accentColor}40`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
-      }}
+      className="flex gap-3 overflow-x-auto pb-1"
+      style={{ scrollbarWidth: "none" }}
     >
-      <img
-        src={src}
-        alt={`Screenshot ${index + 1}`}
-        className="w-full h-full object-cover"
-        onError={() => setImgError(true)}
-      />
-    </div>
-  );
-}
-
-function createSeededRandom(seed: number) {
-  let s = seed >>> 0;
-  return function next(): number {
-    s = Math.imul(1664525, s) + 1013904223;
-    return (s >>> 0) / 0x100000000;
-  };
-}
-
-/* ─── Animated Metric Counter ──────────────────────────── */
-/**
- * Counter only starts animating after `canAnimate` becomes true.
- * This prevents showing mixed/0 values during project transitions.
- */
-function MetricCounter({
-  value,
-  label,
-  accentColor,
-  canAnimate,
-}: {
-  value: string;
-  label: string;
-  accentColor: string;
-  canAnimate: boolean;
-}) {
-  const numericMatch = value.match(/^([\d.]+)/);
-  const suffix = value.replace(/^[\d.]+/, "");
-  const numericValue = numericMatch ? parseFloat(numericMatch[1]) : 0;
-
-  const [displayNum, setDisplayNum] = useState(numericValue);
-  const rafRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number | null>(null);
-  const DURATION = 1200; // ms
-
-  useEffect(() => {
-    if (!canAnimate || !numericMatch) return;
-
-    // Reset to full value immediately when not animating
-    setDisplayNum(numericValue);
-    startTimeRef.current = null;
-
-    const animate = (now: number) => {
-      if (startTimeRef.current === null) startTimeRef.current = now;
-      const elapsed = now - startTimeRef.current;
-      const t = Math.min(elapsed / DURATION, 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - t, 3);
-      setDisplayNum(Math.round(numericValue * eased));
-      if (t < 1) {
-        rafRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    rafRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canAnimate, value]);
-
-  const shown = canAnimate ? displayNum : numericValue;
-
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-baseline gap-1">
-        <span
-          className="font-mono text-4xl md:text-5xl font-light tabular-nums"
-          style={{ color: accentColor }}
-        >
-          {numericMatch ? shown : value}
-        </span>
-        {suffix && (
-          <span
-            className="font-mono text-lg md:text-xl"
-            style={{ color: accentColor, opacity: 0.7 }}
+      {screenshots.map((src, i) =>
+        failed[i] ? (
+          <div
+            key={i}
+            className="flex h-[68px] w-[108px] flex-shrink-0 items-center justify-center"
+            style={{
+              borderRadius: "6px",
+              border: "1px solid rgba(186,215,247,0.08)",
+              background: "rgba(186,215,247,0.02)",
+            }}
           >
-            {suffix}
-          </span>
-        )}
-      </div>
-      <span className="font-mono text-[10px] tracking-widest uppercase text-white/25">
-        {label}
-      </span>
+            <span className="font-mono text-[8px] text-frost-glow/25">
+              SCREEN {i + 1}
+            </span>
+          </div>
+        ) : (
+          <img
+            key={i}
+            src={src}
+            alt={`${src.split("/")[2] ?? "project"} screen ${i + 1}`}
+            loading="lazy"
+            className="h-[68px] w-[108px] flex-shrink-0 cursor-pointer object-cover transition-opacity duration-300 hover:opacity-80"
+            style={{
+              borderRadius: "6px",
+              border: "1px solid rgba(186,215,247,0.08)",
+            }}
+            onError={() => setFailed((prev) => ({ ...prev, [i]: true }))}
+          />
+        )
+      )}
     </div>
   );
 }
 
-/* ─── Per-Project Atmospheric Particles ────────────────── */
-function ProjectParticles({
-  color,
-  count = 8,
+/* ─── Compact Project Card ────────────────────────────── */
+
+function ProjectCard({
+  project,
+  total,
+  onOpen,
 }: {
-  color: string;
-  count?: number;
+  project: Project;
+  total: number;
+  onOpen: (project: Project) => void;
 }) {
-  const particles = useMemo(() => {
-    const rand = createSeededRandom(42);
-    return Array.from({ length: count }, () => ({
-      x: rand() * 100,
-      y: rand() * 100,
-      size: rand() * 1.5 + 0.3,
-      opacity: rand() * 0.12 + 0.02,
-      speed: rand() * 0.2 + 0.05,
-      delay: rand() * 5,
-    }));
-  }, [count]);
+  const accent = project.accentColor.text;
+
+  const visibleTags = project.tags.slice(0, 3);
+  const hiddenTagCount = project.tags.length - visibleTags.length;
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {particles.map((p, i) => (
+    <article
+      onClick={() => onOpen(project)}
+      className="project-card glass-card hairline group relative flex h-full cursor-pointer flex-col overflow-hidden"
+      style={{ "--card-accent": project.accentColor.line } as React.CSSProperties}
+    >
+      {/* Featured accent hairline */}
+      {project.featured && (
         <div
-          key={i}
-          className="absolute rounded-full"
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[1]"
           style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            opacity: p.opacity,
-            background: color,
-            animation: `heroFloat ${12 / p.speed}s ${p.delay}s ease-in-out infinite alternate`,
+            height: "1px",
+            background: `linear-gradient(90deg, transparent, ${project.accentColor.line} 40%, ${project.accentColor.line} 60%, transparent)`,
           }}
         />
-      ))}
-    </div>
-  );
-}
+      )}
 
-/* ─── Single Project Slide ─────────────────────────────── */
-/**
- * This component owns the ENTIRE visual state of one project.
- * It is only mounted when it is the active project.
- * AnimatePresence mode="wait" ensures exit completes before
- * the next project mounts.
- */
-function ProjectSlide({
-  project,
-  segmentProgress,
-  reduced,
-}: {
-  project: (typeof projects)[0];
-  segmentProgress: number;
-  reduced: boolean;
-}) {
-  // Counter only starts after entrance animation completes
-  const [counterActive, setCounterActive] = useState(false);
-  const accent = project.accentColor;
+      {/* Media */}
+      <div className="relative w-full border-b" style={{ borderColor: "rgba(186,215,247,0.08)" }}>
+        <ProjectMedia src={project.thumbnail} alt={project.title} />
+      </div>
 
-  const enterVariants = {
-    initial: {
-      opacity: 0,
-      y: reduced ? 0 : 28,
-      filter: reduced ? "blur(0px)" : "blur(8px)",
-    },
-    animate: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-    },
-    exit: {
-      opacity: 0,
-      y: reduced ? 0 : -24,
-      filter: reduced ? "blur(0px)" : "blur(6px)",
-    },
-  };
-
-  const transition = {
-    duration: reduced ? 0.15 : 0.55,
-    ease: [0.16, 1, 0.3, 1] as const,
-  };
-
-  const exitTransition = {
-    duration: reduced ? 0.1 : 0.38,
-    ease: [0.4, 0, 1, 1] as const,
-  };
-
-  return (
-    <motion.div
-      key={project.id}
-      variants={enterVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={{ ...transition }}
-      onAnimationComplete={(definition) => {
-        // Only activate counter after the entrance animation finishes
-        if (definition === "animate") {
-          setCounterActive(true);
-        }
-      }}
-      className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 xl:px-28"
-      style={{
-        // Override framer-motion exit transition duration separately
-        // by using a custom exit prop on variants
-      }}
-    >
-      {/* Override exit transition speed */}
-      <motion.div
-        className="absolute inset-0"
-        variants={{
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          exit: { opacity: 0, transition: exitTransition },
-        }}
-        style={{
-          background: `radial-gradient(ellipse 65% 55% at 25% 50%, ${accent.primary} 0%, transparent 70%)`,
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Per-project particles */}
-      {!reduced && <ProjectParticles color={accent.line} />}
-
-      <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center">
-        {/* Left: Project info */}
-        <div className="lg:col-span-7 flex flex-col gap-5">
-          {/* Thumbnail */}
-          {project.thumbnail && (
-            <ProjectThumbnail
-              src={project.thumbnail}
-              alt={project.title}
-              accentColor={accent.text}
-            />
+      {/* Content */}
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        {/* Meta row */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className="font-mono text-[9px] tracking-widest uppercase"
+            style={{ color: accent }}
+          >
+            {CATEGORY_LABELS[project.category]}
+          </span>
+          {project.featured && (
+            <span
+              className="chip chip-sm"
+              style={{ color: "#B8A6FF", background: "rgba(102,58,243,0.16)" }}
+            >
+              Featured
+            </span>
           )}
-
-          {/* Status + index */}
-          <div className="flex items-center gap-4">
-            <div
-              className="font-mono text-[9px] tracking-widest uppercase px-2.5 py-1 border"
-              style={{
-                color: accent.text,
-                borderColor: accent.line,
-                backgroundColor: accent.primary,
-              }}
+          {project.needsReview && (
+            <span
+              className="chip chip-sm"
+              style={{ color: "#E8C87C", background: "rgba(232,200,124,0.12)" }}
             >
-              {project.status}
-            </div>
-            <div className="font-mono text-[9px] tracking-widest text-white/15 uppercase">
-              {project.id} / {projects.length.toString().padStart(2, "0")}
-            </div>
+              Pending Review
+            </span>
+          )}
+          <span className="ml-auto font-mono text-[9px] tracking-[0.2em] text-fog-veil/50">
+            {project.id} / {total.toString().padStart(2, "0")}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 className="font-heading text-lg font-medium leading-tight text-ice-highlight">
+          {project.title}
+        </h3>
+
+        {/* Short description */}
+        <p className="line-clamp-2 font-sans text-[13px] leading-relaxed text-moon-mist">
+          {project.philosophy}
+        </p>
+
+        {/* Headline metric */}
+        {project.metric && (
+          <div className="flex items-baseline gap-2">
+            <span
+              className="font-mono text-base font-light tabular-nums"
+              style={{ color: accent }}
+            >
+              {project.metric.value}
+            </span>
+            <span className="font-mono text-[9px] tracking-widest uppercase text-fog-veil/60">
+              {project.metric.label}
+            </span>
           </div>
+        )}
 
-          {/* Giant background number watermark */}
-          <div className="relative">
-            <div
-              className="absolute -top-14 -left-4 font-mono select-none pointer-events-none"
-              style={{
-                fontSize: "clamp(5rem, 16vw, 12rem)",
-                opacity: 0.03,
-                color: "#fff",
-                lineHeight: 1,
-              }}
-            >
-              {project.id}
-            </div>
-
-            {/* Subtitle */}
-            <p
-              className="font-mono text-[10px] tracking-widest uppercase mb-3"
-              style={{ color: accent.text, opacity: 0.7 }}
-            >
-              {project.subtitle}
-            </p>
-
-            {/* Title */}
-            <h3
-              className="font-heading leading-[1.05] text-white relative z-10"
-              style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
-            >
-              {project.title}
-            </h3>
-          </div>
-
-          {/* Philosophy */}
-          <p className="font-sans text-sm md:text-base text-white/50 leading-relaxed max-w-lg">
-            {project.philosophy}
-          </p>
-
-          {/* Metric counter — only animates after entrance complete */}
-          <MetricCounter
-            value={project.metric.value}
-            label={project.metric.label}
-            accentColor={accent.text}
-            canAnimate={counterActive}
-          />
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="font-mono text-[9px] tracking-widest uppercase border border-white/8 px-3 py-1 text-white/35"
-              >
+        {/* Technology tags */}
+        {visibleTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {visibleTags.map((tag) => (
+              <span key={tag} className="chip chip-sm">
                 {tag}
               </span>
             ))}
-          </div>
-
-          {/* Screenshot gallery */}
-          {project.screenshots && project.screenshots.length > 0 && (
-            <ScreenshotGallery
-              screenshots={project.screenshots}
-              accentColor={accent.text}
-            />
-          )}
-
-          {/* Action buttons */}
-          <div className="flex items-center gap-3">
-            {project.github && (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[9px] tracking-widest uppercase border px-4 py-2 transition-all duration-300 hover-lift"
-                style={{
-                  color: "rgba(255,255,255,0.6)",
-                  borderColor: "rgba(255,255,255,0.10)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = `${accent.text}50`;
-                  e.currentTarget.style.color = accent.text;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.5)";
-                }}
-              >
-                GitHub ↗
-              </a>
-            )}
-            {project.demo ? (
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[9px] tracking-widest uppercase border px-4 py-2 transition-all duration-300"
-                style={{
-                  color: accent.text,
-                  borderColor: `${accent.text}40`,
-                }}
-              >
-                Live Demo →
-              </a>
-            ) : (
-              <span
-                className="font-mono text-[9px] tracking-widest uppercase border px-4 py-2"
-                style={{
-                  color: "rgba(255,255,255,0.20)",
-                  borderColor: "rgba(255,255,255,0.05)",
-                  opacity: 0.4,
-                  cursor: "not-allowed",
-                }}
-                title="Coming Soon"
-              >
-                Coming Soon
+            {hiddenTagCount > 0 && (
+              <span className="chip chip-sm text-fog-veil/70">
+                +{hiddenTagCount}
               </span>
             )}
           </div>
-        </div>
+        )}
 
-        {/* Right: Engineering rationale + metrics */}
-        <div className="lg:col-span-5 flex flex-col gap-4">
-          {/* Detailed metrics row */}
-          {project.metrics && project.metrics.length > 0 && (
-            <div
-              className="flex gap-4 p-4 border border-white/5"
-              style={{ background: "rgba(5,5,5,0.3)" }}
+        {/* Actions */}
+        <div
+          className="mt-auto flex items-center gap-3 border-t pt-3"
+          style={{ borderColor: "rgba(186,215,247,0.08)" }}
+        >
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${project.title} GitHub repository`}
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-[10px] uppercase tracking-[0.12em] text-frost-glow/70 transition-colors duration-250 hover:text-ice-highlight"
             >
-              {project.metrics.map((m: { value: string; label: string }, idx: number) => (
-                <div key={idx} className="flex-1 text-center">
-                  <div
-                    className="font-mono text-lg md:text-xl font-light"
-                    style={{ color: accent.text }}
-                  >
-                    {m.value}
-                  </div>
-                  <div className="font-mono text-[8px] tracking-widest uppercase text-white/25 mt-1">
-                    {m.label}
-                  </div>
-                </div>
-              ))}
+              GitHub ↗
+            </a>
+          )}
+          {project.demo && (
+            <a
+              href={project.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${project.title} live demo`}
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-[10px] uppercase tracking-[0.12em] text-frost-glow/70 transition-colors duration-250 hover:text-ice-highlight"
+            >
+              Demo ↗
+            </a>
+          )}
+          <button
+            type="button"
+            aria-label={`View details for ${project.title}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpen(project);
+            }}
+            className="ml-auto inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-250"
+            style={{ color: accent }}
+          >
+            Details
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-300 group-hover:translate-x-0.5"
+            >
+              →
+            </span>
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ─── Project Detail Modal ────────────────────────────── */
+
+function DetailSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="font-mono text-[9px] tracking-widest uppercase text-fog-veil/50">
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+}
+
+function ProjectDetailModal({
+  project,
+  onClose,
+}: {
+  project: Project;
+  onClose: () => void;
+}) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
+  const lenis = useLenis();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const accent = project.accentColor.text;
+
+  // Lock background scroll while open
+  useEffect(() => {
+    lenis?.stop();
+    return () => lenis?.start();
+  }, [lenis]);
+
+  // Focus management + Escape to close
+  useEffect(() => {
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+
+    panelRef.current?.focus();
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      // data-lenis-prevent: while the background scroll is locked via
+      // lenis.stop(), Lenis would preventDefault() every wheel/touch event,
+      // killing the modal's own native scrolling. This attribute makes Lenis
+      // ignore events inside the modal so its content scrolls normally.
+      data-lenis-prevent=""
+      className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto overscroll-contain p-4 py-10 md:items-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.25 }}
+      style={{ background: "rgba(3,4,10,0.82)", backdropFilter: "blur(8px)" }}
+      onClick={onClose}
+    >
+      <motion.div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-detail-title"
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+        className="glass-panel hairline relative w-full max-w-3xl outline-none"
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.98 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {/* Close button */}
+        <button
+          type="button"
+          aria-label="Close project details"
+          onClick={onClose}
+          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full font-mono text-sm text-moon-mist/70 transition-colors duration-250 hover:text-ice-highlight"
+          style={{
+            background: "rgba(5,6,15,0.7)",
+            boxShadow: "0 0 0 1px rgba(186,215,247,0.14) inset",
+          }}
+        >
+          ✕
+        </button>
+
+        <div className="max-h-[85vh] overflow-y-auto">
+          {/* Media */}
+          {project.thumbnail && (
+            <div className="border-b" style={{ borderColor: "rgba(186,215,247,0.08)" }}>
+              <ProjectMedia src={project.thumbnail} alt={project.title} />
             </div>
           )}
 
-          <div
-            className="border border-white/5 p-6 md:p-8 flex flex-col gap-5"
-            style={{
-              background: "rgba(5,5,5,0.5)",
-              backdropFilter: "blur(12px)",
-            }}
-          >
-            <div
-              className="font-mono text-[9px] tracking-widest uppercase pb-3 border-b"
-              style={{
-                color: "rgba(255,255,255,0.18)",
-                borderColor: "rgba(255,255,255,0.05)",
-              }}
-            >
-              ENGINEERING_RATIONALE
+          <div className="flex flex-col gap-7 p-6 md:p-8">
+            {/* Header */}
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-2 pr-10">
+                <span
+                  className="font-mono text-[9px] tracking-widest uppercase"
+                  style={{ color: accent }}
+                >
+                  {CATEGORY_LABELS[project.category]}
+                </span>
+                <span className="chip chip-sm" style={{ color: "rgba(184,214,240,0.9)" }}>
+                  ● {project.status}
+                </span>
+                {project.featured && (
+                  <span
+                    className="chip chip-sm"
+                    style={{ color: "#B8A6FF", background: "rgba(102,58,243,0.16)" }}
+                  >
+                    Featured
+                  </span>
+                )}
+                {project.needsReview && (
+                  <span
+                    className="chip chip-sm"
+                    style={{ color: "#E8C87C", background: "rgba(232,200,124,0.12)" }}
+                  >
+                    Pending Review
+                  </span>
+                )}
+                <span className="ml-auto font-mono text-[10px] tracking-[0.2em] text-fog-veil/50">
+                  {project.id}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="font-mono text-[9px] tracking-widest uppercase text-fog-veil/60">
+                  {project.subtitle}
+                </span>
+                <h3
+                  id="project-detail-title"
+                  className="font-heading text-2xl font-medium leading-tight text-ice-highlight md:text-3xl"
+                >
+                  {project.title}
+                </h3>
+              </div>
             </div>
 
-            {[
-              { label: "CHALLENGE", value: project.rationale.challenge },
-              { label: "APPROACH", value: project.rationale.approach },
-              { label: "IMPACT", value: project.rationale.impact, highlight: true },
-            ].map(({ label, value, highlight }) => (
-              <div key={label}>
-                <span
-                  className="font-mono text-[9px] tracking-widest block mb-1.5 uppercase"
+            {/* Overview */}
+            <DetailSection label="Overview">
+              <p className="font-sans text-sm leading-relaxed text-moon-mist">
+                {project.philosophy}
+              </p>
+            </DetailSection>
+
+            {/* Metrics */}
+            {(project.metric || project.metrics.length > 0) && (
+              <DetailSection label="Key Metrics">
+                <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+                  {project.metric && (
+                    <div className="flex flex-col gap-1">
+                      <span
+                        className="font-mono text-3xl font-light tabular-nums"
+                        style={{ color: accent }}
+                      >
+                        {project.metric.value}
+                      </span>
+                      <span className="font-mono text-[9px] tracking-widest uppercase text-fog-veil/70">
+                        {project.metric.label}
+                      </span>
+                    </div>
+                  )}
+                  {project.metrics.map((m) => (
+                    <div key={m.label} className="flex flex-col gap-1">
+                      <span className="font-mono text-xl font-light tabular-nums text-frost-glow/80">
+                        {m.value}
+                      </span>
+                      <span className="font-sans text-[9px] tracking-[0.15em] uppercase text-fog-veil/60">
+                        {m.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </DetailSection>
+            )}
+
+            {/* Architecture */}
+            {project.architecture && (
+              <DetailSection label="Architecture">
+                <p
+                  className="rounded-lg p-4 font-mono text-[11px] leading-relaxed text-frost-glow/75"
                   style={{
-                    color: highlight ? accent.text : "rgba(255,255,255,0.25)",
+                    background: "rgba(199,211,234,0.04)",
+                    boxShadow: "0 0 0 1px rgba(186,215,247,0.08) inset",
                   }}
                 >
-                  {label}:
-                </span>
-                <p className="font-mono text-[11px] text-white/45 leading-relaxed">
-                  {value}
+                  {project.architecture}
                 </p>
-              </div>
-            ))}
-          </div>
+              </DetailSection>
+            )}
 
-          {/* Progress bar — reflects position within current project's scroll segment */}
-          <div className="mt-4 flex items-center gap-3">
-            <div
-              className="h-px flex-1 overflow-hidden"
-              style={{ background: "rgba(255,255,255,0.04)" }}
-            >
-              <div
-                className="h-full transition-none"
-                style={{
-                  width: `${segmentProgress * 100}%`,
-                  background: accent.line,
-                }}
-              />
+            {/* Engineering rationale */}
+            {project.rationale && (
+              <DetailSection label="Engineering Rationale">
+                <div className="flex flex-col gap-4">
+                  {[
+                    { label: "Challenge", value: project.rationale.challenge },
+                    { label: "Approach", value: project.rationale.approach },
+                    { label: "Impact", value: project.rationale.impact, highlight: true },
+                  ].map(({ label, value, highlight }) => (
+                    <div key={label} className="flex flex-col gap-1">
+                      <span
+                        className="font-mono text-[9px] tracking-widest uppercase"
+                        style={{ color: highlight ? accent : "rgba(157,167,186,0.8)" }}
+                      >
+                        {label}
+                      </span>
+                      <p className="font-sans text-sm leading-relaxed text-frost-glow/75">
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </DetailSection>
+            )}
+
+            {/* Tech stack */}
+            {project.tags.length > 0 && (
+              <DetailSection label="Tech Stack">
+                <div className="flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
+                    <span key={tag} className="chip">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </DetailSection>
+            )}
+
+            {/* Screenshots */}
+            {project.screenshots.length > 0 && (
+              <DetailSection label="Screenshots">
+                <GalleryStrip screenshots={project.screenshots} />
+              </DetailSection>
+            )}
+
+            {/* Links */}
+            <div className="flex flex-wrap items-center gap-3 border-t pt-5" style={{ borderColor: "rgba(186,215,247,0.08)" }}>
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline btn-sm"
+                >
+                  GitHub ↗
+                </a>
+              )}
+              {project.demo ? (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-violet btn-sm"
+                >
+                  Live Demo →
+                </a>
+              ) : (
+                <span
+                  className="chip btn-sm cursor-default text-fog-veil/60"
+                  title="Coming Soon"
+                >
+                  Coming Soon
+                </span>
+              )}
             </div>
-            <span
-              className="font-mono text-[8px] tracking-widest"
-              style={{ color: "rgba(255,255,255,0.15)" }}
-            >
-              {String(Math.round(segmentProgress * 100)).padStart(3, "0")}%
-            </span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
 
-/* ─── Main Project Showcase ────────────────────────────── */
+/* ─── Main Section ────────────────────────────────────── */
+
 export default function ResearchArchive() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const [activeProject, setActiveProject] = useState(0);
-  const [segmentProgress, setSegmentProgress] = useState(0);
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const PER_PROJECT_SCROLL = 1.8;
-  const TOTAL_HEIGHT_VH = 100 + projects.length * PER_PROJECT_SCROLL * 100;
-
-  useEffect(() => {
-    if (typeof window === "undefined" || shouldReduceMotion) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let ctx: any = null;
-
-    const init = async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      const trigger = sectionRef.current;
-      if (!trigger) return;
-
-      ctx = gsap.context(() => {
-        // Fade section container in
-        gsap.fromTo(
-          stickyRef.current,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            duration: 0.5,
-            scrollTrigger: {
-              trigger,
-              start: "top 80%",
-              end: "top top",
-              scrub: 1,
-            },
-          }
-        );
-
-        // Track scroll → active project + segment progress
-        ScrollTrigger.create({
-          trigger,
-          start: "top top",
-          end: `+=${trigger.offsetHeight - window.innerHeight}`,
-          scrub: SCRUB.project,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const totalProjects = projects.length;
-            const segmentSize = 1 / totalProjects;
-            const activeIdx = Math.min(
-              Math.floor(self.progress / segmentSize),
-              totalProjects - 1
-            );
-            const seg =
-              (self.progress - activeIdx * segmentSize) / segmentSize;
-
-            setActiveProject(activeIdx);
-            setSegmentProgress(Math.max(0, Math.min(1, seg)));
-          },
-        });
-
-        // Fade section out at end
-        gsap.to(stickyRef.current, {
-          opacity: 0,
-          scrollTrigger: {
-            trigger,
-            start: "bottom 20%",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-      });
-    };
-
-    init();
-    return () => ctx?.revert();
-  }, [shouldReduceMotion]);
+  const filteredProjects = useMemo(
+    () =>
+      activeFilter === "all"
+        ? projects
+        : projects.filter((project) => project.category === activeFilter),
+    [activeFilter]
+  );
 
   return (
-    <section
-      id="projects"
-      ref={sectionRef}
-      className="relative"
-      style={{
-        height: `${TOTAL_HEIGHT_VH}vh`,
-        background:
-          "linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.96) 3%, rgba(5,5,5,0.96) 97%, rgba(5,5,5,0) 100%)",
-      }}
-    >
-      <div
-        ref={stickyRef}
-        className="sticky top-0 h-screen overflow-hidden w-full"
-        style={{ opacity: shouldReduceMotion ? 1 : 0 }}
-      >
-        {/* Atmospheric edge blends */}
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-28 z-10"
-          style={{ background: "linear-gradient(to bottom, #050505, transparent)" }}
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-28 z-10"
-          style={{ background: "linear-gradient(to top, #050505, transparent)" }}
+    <section id="projects" className="relative section-gap">
+      <Container className="max-w-7xl px-6 md:px-12 xl:px-24">
+        <SectionHeader
+          eyebrow="Projects"
+          title="Featured Work"
+          statement="AI systems, applied machine learning, cybersecurity, and research — built to solve real problems."
         />
 
-        {/* Section label */}
-        <div className="absolute top-8 left-6 md:left-16 xl:left-28 z-20">
-          <div className="font-mono text-[9px] tracking-widest text-white/12 uppercase">
-            /// PROJECTS
-          </div>
-        </div>
+        <ProjectFilters active={activeFilter} onChange={setActiveFilter} />
 
-        {/* Project index dots — right side */}
-        <div className="absolute right-6 md:right-10 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3">
-          {projects.map((p, i) => (
-            <div
-              key={i}
-              className="w-1 rounded-full transition-all duration-500"
-              style={{
-                height: i === activeProject ? "18px" : "4px",
-                background:
-                  i === activeProject
-                    ? p.accentColor.line
-                    : "rgba(255,255,255,0.10)",
+        <div className="mt-10 grid grid-cols-1 gap-5 md:mt-14 md:grid-cols-2 xl:grid-cols-3 xl:gap-6">
+          {filteredProjects.map((project, index) => (
+            <motion.div
+              key={project.id}
+              className="min-w-0"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 32 }}
+              whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-12%" }}
+              transition={{
+                duration: 0.7,
+                delay: shouldReduceMotion ? 0 : (index % 3) * 0.08,
+                ease: [0.16, 1, 0.3, 1],
               }}
-            />
+            >
+              <ProjectCard
+                project={project}
+                total={projects.length}
+                onOpen={setSelectedProject}
+              />
+            </motion.div>
           ))}
         </div>
+      </Container>
 
-        {/*
-         * AnimatePresence mode="wait":
-         * — exit animation of the outgoing project runs to completion
-         * — only then does the incoming project mount and animate in
-         * — eliminates ALL simultaneous visibility of two projects
-         */}
-        <AnimatePresence mode="wait" initial={false}>
-          <ProjectSlide
-            key={projects[activeProject]?.id ?? activeProject}
-            project={projects[activeProject] ?? projects[0]}
-            segmentProgress={segmentProgress}
-            reduced={shouldReduceMotion}
+      {/* Project detail view */}
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectDetailModal
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
           />
-        </AnimatePresence>
-      </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
