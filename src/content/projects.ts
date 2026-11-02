@@ -56,7 +56,7 @@ export const projects: Project[] = [
       "Network flows → frozen Isolation Forest (E2 with_port) → severity bands → MITRE ATT&CK RAG → grounded LLM explanation → dashboard → server-side PDF incident report.",
     github: "https://github.com/HARSHIL3431/threatweave",
     demo: null,
-    thumbnail: null,
+    thumbnail: "/images/projects/threatweave.png",
     screenshots: [],
     metrics: [
       { value: "132", label: "Tests (87 unit + 45 integration)" },
@@ -80,7 +80,7 @@ export const projects: Project[] = [
       "Server-side resource labels → session-bound taint → canonicalization → policy evaluation (hard-deny separate from risk scoring) → request-hash-bound approvals → isolated executor behind a Docker socket proxy → hash-chained audit log.",
     github: "https://github.com/HARSHIL3431/NOMOS",
     demo: null,
-    thumbnail: null,
+    thumbnail: "/images/projects/nomos.png",
     screenshots: [],
     metrics: [
       { value: "200", label: "Held-out Benchmark Cases" },
@@ -159,7 +159,7 @@ export const projects: Project[] = [
         "Automated expiry tracking system with smart reminders, real-time inventory monitoring, and AI-assisted scanning — reducing human error by orders of magnitude.",
     },
     github: "https://github.com/HARSHIL3431/digital-expiry-tracker",
-    demo: null,
+    demo: "https://digital-expiry-tracker-api.onrender.com/",
     thumbnail: "/images/digital-expiry-tracker/thumbnail.png",
     screenshots: [
       "/images/digital-expiry-tracker/dashboard-1.png",
@@ -193,7 +193,7 @@ export const projects: Project[] = [
       "Camera feed → AI vision module (detection, tracking, position) → field context (crop region, distance, time of day) → explainable decision engine → smart response engine → farmer recommendation → incident timeline log.",
     github: "https://github.com/HARSHIL3431/TETRA036",
     demo: null,
-    thumbnail: null,
+    thumbnail: "/images/projects/rakshak-ai.png",
     screenshots: [],
     metrics: [
       { value: "5-Stage", label: "Reasoning Pipeline" },
@@ -213,8 +213,8 @@ export const projects: Project[] = [
     architecture:
       "ZIP ingestion (path-traversal safe) → language detection → AST parsing (Python ast + JavaScript tree-sitter) → repository analysis → AI explainer, test generator with coverage loop, and refactoring risk scorer → contract-locked job results.",
     github: "https://github.com/HARSHIL3431/hackorbit_CodeOracle_Vision-X",
-    demo: null,
-    thumbnail: null,
+    demo: "https://hackorbit-code-oracle-vision-x.vercel.app/",
+    thumbnail: "/images/projects/codeoracle.png",
     screenshots: [],
     metrics: [
       { value: "3-Stage", label: "AI Pipeline" },
@@ -234,8 +234,8 @@ export const projects: Project[] = [
     architecture:
       "Next.js App Router + Prisma + PostgreSQL (Neon) — RBAC portals (customer / vendor / admin), atomic transactional checkout with idempotency checks, dynamic overlap availability engine, hourly/daily billing with configurable late-fee rules.",
     github: "https://github.com/HARSHIL3431/hackathon-odoo",
-    demo: null,
-    thumbnail: null,
+    demo: "https://hackathon-odoo-virid.vercel.app/",
+    thumbnail: "/images/projects/rental-erp.png",
     screenshots: [],
     metrics: [
       { value: "3", label: "Role-Based Portals" },
