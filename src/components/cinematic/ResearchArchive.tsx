@@ -11,7 +11,20 @@ import {
 } from "@/content/projects";
 import { Container } from "@/components/layout/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { THUMBNAIL_PLACEHOLDERS } from "@/content/thumbnail-placeholders";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+
+/* ─── Responsive `sizes` for the archive grid ───────────
+ * Grid: 1 col (mobile, px-6), 2 cols (md, px-12), 3 cols
+ * (xl, max-w-7xl + px-24) — matches the container/padding so
+ * the image optimizer never fetches more than ~1x display DPR. */
+const CARD_SIZES =
+  "(min-width: 1280px) 346px, (min-width: 768px) calc(50vw - 68px), calc(100vw - 48px)";
+/* Detail modal panel: max-w-3xl (768px) inside p-4 gutters. */
+const MODAL_SIZES = "(min-width: 800px) 768px, calc(100vw - 32px)";
+/* Gallery strip: fixed 108x68 thumbnails inside the modal. */
+const GALLERY_SIZES = "108px";
 
 /* ─── Filters ─────────────────────────────────────────── */
 
@@ -81,7 +94,15 @@ function ProjectFilters({
 
 /* ─── Project Media (image with graceful fallback) ────── */
 
-function ProjectMedia({ src, alt }: { src: string | null; alt: string }) {
+function ProjectMedia({
+  src,
+  alt,
+  sizes,
+}: {
+  src: string | null;
+  alt: string;
+  sizes: string;
+}) {
   const [imgError, setImgError] = useState(false);
 
   if (imgError || !src) {
@@ -106,10 +127,17 @@ function ProjectMedia({ src, alt }: { src: string | null; alt: string }) {
       className="relative w-full overflow-hidden"
       style={{ aspectRatio: "16/9" }}
     >
-      <img
+      {/* next/image: responsive srcset via `sizes`, blur LQIP while the
+          full image streams in, lazy by default (archive is below the
+          fold; the modal only mounts its image once opened). `fill` +
+          the fixed 16/9 parent guarantee zero layout shift. */}
+      <Image
         src={src}
         alt={alt}
-        loading="lazy"
+        fill
+        sizes={sizes}
+        placeholder="blur"
+        blurDataURL={THUMBNAIL_PLACEHOLDERS[src]}
         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         onError={() => setImgError(true)}
       />
@@ -152,11 +180,13 @@ function GalleryStrip({ screenshots }: { screenshots: string[] }) {
             </span>
           </div>
         ) : (
-          <img
+          <Image
             key={i}
             src={src}
             alt={`${src.split("/")[2] ?? "project"} screen ${i + 1}`}
-            loading="lazy"
+            width={108}
+            height={68}
+            sizes={GALLERY_SIZES}
             className="h-[68px] w-[108px] flex-shrink-0 cursor-pointer object-cover transition-opacity duration-300 hover:opacity-80"
             style={{
               borderRadius: "6px",
@@ -206,7 +236,7 @@ function ProjectCard({
 
       {/* Media */}
       <div className="relative w-full border-b" style={{ borderColor: "rgba(186,215,247,0.08)" }}>
-        <ProjectMedia src={project.thumbnail} alt={project.title} />
+        <ProjectMedia src={project.thumbnail} alt={project.title} sizes={CARD_SIZES} />
       </div>
 
       {/* Content */}
@@ -431,7 +461,7 @@ function ProjectDetailModal({
           {/* Media */}
           {project.thumbnail && (
             <div className="border-b" style={{ borderColor: "rgba(186,215,247,0.08)" }}>
-              <ProjectMedia src={project.thumbnail} alt={project.title} />
+              <ProjectMedia src={project.thumbnail} alt={project.title} sizes={MODAL_SIZES} />
             </div>
           )}
 

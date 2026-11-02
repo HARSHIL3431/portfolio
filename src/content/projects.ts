@@ -56,7 +56,7 @@ export const projects: Project[] = [
       "Network flows → frozen Isolation Forest (E2 with_port) → severity bands → MITRE ATT&CK RAG → grounded LLM explanation → dashboard → server-side PDF incident report.",
     github: "https://github.com/HARSHIL3431/threatweave",
     demo: null,
-    thumbnail: "/images/projects/threatweave.png",
+    thumbnail: "/images/projects/threatweave.webp",
     screenshots: [],
     metrics: [
       { value: "132", label: "Tests (87 unit + 45 integration)" },
@@ -80,7 +80,7 @@ export const projects: Project[] = [
       "Server-side resource labels → session-bound taint → canonicalization → policy evaluation (hard-deny separate from risk scoring) → request-hash-bound approvals → isolated executor behind a Docker socket proxy → hash-chained audit log.",
     github: "https://github.com/HARSHIL3431/NOMOS",
     demo: null,
-    thumbnail: "/images/projects/nomos.png",
+    thumbnail: "/images/projects/nomos.webp",
     screenshots: [],
     metrics: [
       { value: "200", label: "Held-out Benchmark Cases" },
@@ -102,7 +102,7 @@ export const projects: Project[] = [
       "FDA FAERS drug-event reports → statistical signal detection (PRR, ROR, chi-square, report counts, reporting trends) → evidence exploration and supporting report inspection → case-quality assessment and duplicate triage → grounded AI evidence explanations (Groq) → deterministic regulatory review rules → document intelligence (Gemini) → human review and assessment workflow.",
     github: "https://github.com/HARSHIL3431/bob-ai-hackathon-visionx",
     demo: "https://signaltrace-five.vercel.app/",
-    thumbnail: "/images/projects/signaltrace.png",
+    thumbnail: "/images/projects/signaltrace.webp",
     screenshots: [],
     metrics: [],
   },
@@ -128,10 +128,10 @@ export const projects: Project[] = [
     },
     github: "https://github.com/HARSHIL3431/navjeevan-ai",
     demo: null,
-    thumbnail: "/images/navjeevan-ai/thumbnail.png",
+    thumbnail: "/images/navjeevan-ai/thumbnail.webp",
     screenshots: [
-      "/images/navjeevan-ai/dashboard-1.png",
-      "/images/navjeevan-ai/dashboard-2.png",
+      "/images/navjeevan-ai/dashboard-1.webp",
+      "/images/navjeevan-ai/dashboard-2.webp",
     ],
     metrics: [
       { value: "6", label: "Farmer Services" },
@@ -160,10 +160,10 @@ export const projects: Project[] = [
     },
     github: "https://github.com/HARSHIL3431/digital-expiry-tracker",
     demo: "https://digital-expiry-tracker-api.onrender.com/",
-    thumbnail: "/images/digital-expiry-tracker/thumbnail.png",
+    thumbnail: "/images/digital-expiry-tracker/thumbnail.webp",
     screenshots: [
-      "/images/digital-expiry-tracker/dashboard-1.png",
-      "/images/digital-expiry-tracker/dashboard-2.png",
+      "/images/digital-expiry-tracker/dashboard-1.webp",
+      "/images/digital-expiry-tracker/dashboard-2.webp",
     ],
     metrics: [
       { value: "95%", label: "OCR Success" },
@@ -193,7 +193,7 @@ export const projects: Project[] = [
       "Camera feed → AI vision module (detection, tracking, position) → field context (crop region, distance, time of day) → explainable decision engine → smart response engine → farmer recommendation → incident timeline log.",
     github: "https://github.com/HARSHIL3431/TETRA036",
     demo: null,
-    thumbnail: "/images/projects/rakshak-ai.png",
+    thumbnail: "/images/projects/rakshak-ai.webp",
     screenshots: [],
     metrics: [
       { value: "5-Stage", label: "Reasoning Pipeline" },
@@ -214,7 +214,7 @@ export const projects: Project[] = [
       "ZIP ingestion (path-traversal safe) → language detection → AST parsing (Python ast + JavaScript tree-sitter) → repository analysis → AI explainer, test generator with coverage loop, and refactoring risk scorer → contract-locked job results.",
     github: "https://github.com/HARSHIL3431/hackorbit_CodeOracle_Vision-X",
     demo: "https://hackorbit-code-oracle-vision-x.vercel.app/",
-    thumbnail: "/images/projects/codeoracle.png",
+    thumbnail: "/images/projects/codeoracle.webp",
     screenshots: [],
     metrics: [
       { value: "3-Stage", label: "AI Pipeline" },
@@ -235,7 +235,7 @@ export const projects: Project[] = [
       "Next.js App Router + Prisma + PostgreSQL (Neon) — RBAC portals (customer / vendor / admin), atomic transactional checkout with idempotency checks, dynamic overlap availability engine, hourly/daily billing with configurable late-fee rules.",
     github: "https://github.com/HARSHIL3431/hackathon-odoo",
     demo: "https://hackathon-odoo-virid.vercel.app/",
-    thumbnail: "/images/projects/rental-erp.png",
+    thumbnail: "/images/projects/rental-erp.webp",
     screenshots: [],
     metrics: [
       { value: "3", label: "Role-Based Portals" },
@@ -263,10 +263,10 @@ export const projects: Project[] = [
     },
     github: "https://github.com/HARSHIL3431/stock-price-prediction-lstm",
     demo: null,
-    thumbnail: "/images/stock-analysis/thumbnail.png",
+    thumbnail: "/images/stock-analysis/thumbnail.webp",
     screenshots: [
-      "/images/stock-analysis/dashboard-1.png",
-      "/images/stock-analysis/dashboard-2.png",
+      "/images/stock-analysis/dashboard-1.webp",
+      "/images/stock-analysis/dashboard-2.webp",
     ],
     metrics: [
       { value: "10Y", label: "Historical Data" },
