@@ -16,19 +16,14 @@ export function CinematicCursor() {
   const [isVisible, setIsVisible] = useState(false);
   const shouldReduceMotion = useReducedMotion() ?? false;
 
-  useEffect(() => {
-    // Hide on touch devices
-    const isTouchDevice =
-      typeof window !== "undefined" &&
-      ("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    if (!isTouchDevice && !shouldReduceMotion) {
-      setIsVisible(true);
-    }
-  }, [shouldReduceMotion]);
+  const [isTouchDevice] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  });
 
   // Show/hide cursor when mouse enters/leaves the browser window
   useEffect(() => {
-    if (!isVisible) return;
+    if (shouldReduceMotion || isTouchDevice) return;
 
     const show = () => setIsVisible(true);
     const hide = () => setIsVisible(false);
@@ -40,9 +35,9 @@ export function CinematicCursor() {
       document.removeEventListener("mouseenter", show);
       document.removeEventListener("mouseleave", hide);
     };
-  }, [isVisible]);
+  }, [shouldReduceMotion, isTouchDevice]);
 
-  if (!isVisible) return null;
+  if (!isVisible || shouldReduceMotion || isTouchDevice) return null;
 
   return (
     <>
@@ -52,13 +47,10 @@ export function CinematicCursor() {
         style={{
           width: 7,
           height: 7,
-          background: "rgba(0, 212, 240, 0.85)",
-          boxShadow: "0 0 6px rgba(0, 212, 240, 0.4)",
+          background: "rgba(216, 236, 248, 0.9)",
+          boxShadow: "0 0 6px rgba(216, 236, 248, 0.35)",
         }}
-        animate={{
-          x: x - 3,
-          y: y - 3,
-        }}
+        animate={{ x: x - 3, y: y - 3 }}
         transition={{
           type: "spring",
           stiffness: 300,
@@ -72,13 +64,10 @@ export function CinematicCursor() {
         style={{
           width: 28,
           height: 28,
-          border: "1px solid rgba(255, 255, 255, 0.15)",
+          border: "1px solid rgba(199, 211, 234, 0.25)",
           background: "transparent",
         }}
-        animate={{
-          x: x - 14,
-          y: y - 14,
-        }}
+        animate={{ x: x - 14, y: y - 14 }}
         transition={{
           type: "spring",
           stiffness: 80,
@@ -89,4 +78,3 @@ export function CinematicCursor() {
     </>
   );
 }
-

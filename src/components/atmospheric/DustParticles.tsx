@@ -31,7 +31,7 @@ export function DustParticles({ count = 14 }: { count?: number }) {
       speed: rand() * 0.15 + 0.04,
       opacity: rand() * 0.10 + 0.02,
       delay: i * 0.6,
-      hue: rand() > 0.7 ? "rgba(232,168,124,0.5)" : "rgba(0,212,240,0.4)",
+      hue: rand() > 0.5 ? "rgba(186,215,247,0.4)" : "rgba(199,211,234,0.3)",
     }));
   }, [count]);
 

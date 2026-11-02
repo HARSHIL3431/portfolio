@@ -16,7 +16,7 @@ export function ScrollProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ScrollContext.Provider value={{ scrollY, scrollYProgress }}>
-      <div className="relative isolate min-h-screen">{children}</div>
+      <div className="relative isolate z-[2] min-h-screen">{children}</div>
     </ScrollContext.Provider>
   );
 }
