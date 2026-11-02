@@ -97,7 +97,7 @@ export default function ContactTerminal() {
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, x: -24 }}
             whileInView={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
-            viewport={{ once: false, margin: "-15%" }}
+            viewport={{ once: true, margin: "-15%" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col gap-8 lg:col-span-5"
           >
@@ -149,7 +149,7 @@ export default function ContactTerminal() {
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
             whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-15%" }}
+            viewport={{ once: true, margin: "-15%" }}
             transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-7"
           >

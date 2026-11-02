@@ -62,7 +62,7 @@ body {
 /* ─── Z-Index Layering ────────────────────────────────
  * z-atmosphere: 1  — blueprint grid, spotlight, fog
  * z-content:     2  — page content
- * z-foreground: 20  — film grain overlays
+ * z-foreground: 20  — foreground content
  * z-cursor:     50  — custom cursor
  * z-nav:        60  — navigation
  */
@@ -363,6 +363,10 @@ body {
 }
 
 .scroll-hint-line {
+  /* Base height = the fixed box height (h-5). The keyframes pulse the line
+   * 12↔20px inside that box; this resting height applies before the animation
+   * starts and under reduced-motion (where the global rule ends it instantly). */
+  height: 20px;
   animation: scrollHintPulse 2.5s ease-in-out infinite;
 }
 

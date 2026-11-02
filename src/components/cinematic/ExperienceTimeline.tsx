@@ -38,7 +38,7 @@ export default function ExperienceTimeline() {
                 key={item.org + item.role}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
                 whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: false, margin: "-12%" }}
+                viewport={{ once: true, margin: "-12%" }}
                 transition={{
                   duration: 0.7,
                   delay: shouldReduceMotion ? 0 : index * 0.08,
@@ -120,7 +120,7 @@ export default function ExperienceTimeline() {
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
             whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-12%" }}
+            viewport={{ once: true, margin: "-12%" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col gap-6"
           >

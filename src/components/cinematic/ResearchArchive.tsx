@@ -679,7 +679,7 @@ export default function ResearchArchive() {
               className="min-w-0"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 32 }}
               whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: "-12%" }}
+              viewport={{ once: true, margin: "-12%" }}
               transition={{
                 duration: 0.7,
                 delay: shouldReduceMotion ? 0 : (index % 3) * 0.08,
