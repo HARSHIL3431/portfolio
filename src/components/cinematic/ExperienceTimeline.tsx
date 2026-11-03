@@ -33,12 +33,23 @@ export default function ExperienceTimeline() {
           {experience.map((item, index) => {
             const isWork = item.type === "work";
 
+            // Only render narrative blocks the entry actually has — leadership
+            // and campus roles supply a description without challenge/impact.
+            const narrative = [
+              { label: "Challenge", value: item.challenge },
+              { label: "Approach", value: item.approach },
+              { label: "Impact", value: item.impact, highlight: true },
+            ].filter(
+              (block): block is { label: string; value: string; highlight?: boolean } =>
+                Boolean(block.value)
+            );
+
             return (
               <motion.div
                 key={item.org + item.role}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
                 whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: false, margin: "-12%" }}
+                viewport={{ once: true, margin: "-12%" }}
                 transition={{
                   duration: 0.7,
                   delay: shouldReduceMotion ? 0 : index * 0.08,
@@ -77,6 +88,14 @@ export default function ExperienceTimeline() {
                   >
                     {item.period}
                   </p>
+                  {item.meta && (
+                    <p
+                      className="font-mono text-[10px] tracking-widest uppercase"
+                      style={{ color: "rgba(157,167,186,0.6)" }}
+                    >
+                      {item.meta}
+                    </p>
+                  )}
                 </div>
 
                 {/* Narrative */}
@@ -85,11 +104,7 @@ export default function ExperienceTimeline() {
                     <p className="font-sans text-sm leading-relaxed text-frost-glow/80">
                       {item.description}
                     </p>
-                    {[
-                      { label: "Challenge", value: item.challenge },
-                      { label: "Approach", value: item.approach },
-                      { label: "Impact", value: item.impact, highlight: true },
-                    ].map(({ label, value, highlight }) => (
+                    {narrative.map(({ label, value, highlight }) => (
                       <div key={label} className="flex flex-col gap-1">
                         <span
                           className="font-mono text-[9px] tracking-widest uppercase"
@@ -120,7 +135,7 @@ export default function ExperienceTimeline() {
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
             whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-12%" }}
+            viewport={{ once: true, margin: "-12%" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col gap-6"
           >

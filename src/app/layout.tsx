@@ -3,7 +3,6 @@ import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { ScrollProvider } from "@/providers/ScrollProvider";
-import { FilmGrain } from "@/components/atmospheric/FilmGrain";
 import { DustParticles } from "@/components/atmospheric/DustParticles";
 import { BackgroundAtmosphere } from "@/components/atmospheric/BackgroundAtmosphere";
 import { CinematicCursor } from "@/components/interaction/CinematicCursor";
@@ -112,7 +111,6 @@ export default function RootLayout({
         {/* Atmospheric depth layers (back to front) */}
         <BackgroundAtmosphere />
         <DustParticles />
-        <FilmGrain />
 
         {/* Cursor layer */}
         <CinematicCursor />

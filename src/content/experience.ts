@@ -1,4 +1,44 @@
-export const experience = [
+export interface ExperienceEntry {
+  type: "work" | "education";
+  role: string;
+  org: string;
+  period: string;
+  /** Optional employment type + work mode line (shown when provided). */
+  meta?: string;
+  description: string;
+  challenge?: string;
+  approach?: string;
+  impact?: string;
+}
+
+export const experience: ExperienceEntry[] = [
+  {
+    type: "work" as const,
+    role: "Team Manager",
+    org: "DEZAI Technologies",
+    period: "SEP 2026 — PRESENT",
+    meta: "Internship · Remote",
+    description:
+      "Supporting team coordination, task management, and project execution at DEZAI Technologies. Working with team members to maintain clear communication, organize responsibilities, and support effective delivery.",
+  },
+  {
+    type: "work" as const,
+    role: "Operations Manager",
+    org: "E-Cell, CHARUSAT",
+    period: "AUG 2026 — PRESENT",
+    meta: "Full-time · On-site",
+    description:
+      "Contributing to the operational planning and coordination of E-Cell activities at CHARUSAT. Supporting organizational workflows, team collaboration, and the execution of entrepreneurship-related initiatives.",
+  },
+  {
+    type: "work" as const,
+    role: "Campus Ambassador",
+    org: "E-Cell, IIT Bombay",
+    period: "JUN 2026 — PRESENT",
+    meta: "Part-time · Remote",
+    description:
+      "Selected as a Campus Ambassador for E-Cell IIT Bombay to promote entrepreneurship, innovation, and startup opportunities within the student community. Supporting outreach and student engagement initiatives.",
+  },
   {
     type: "work" as const,
     role: "Data Science & Machine Learning Intern",

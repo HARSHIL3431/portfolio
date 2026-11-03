@@ -167,21 +167,18 @@ export default function Hero() {
         className="mt-16 grid w-full max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3"
       >
         {CAPABILITIES.map((cap, i) => (
-          <motion.div
+          <div
             key={cap.label}
             className="glass-card hairline group flex flex-col gap-3 p-4 transition-transform duration-300 hover:-translate-y-1"
-            animate={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    y: [0, -6, 0],
-                  }
-            }
-            transition={{
-              duration: 6 + (i % 3) * 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.35,
+            style={{
+              /* CSS keyframe float (cardDrift) replaces the per-frame Framer
+               * Motion loop: same 0 → -6px motion, ease-in-out, stagger kept.
+               * `alternate` makes a full cycle 2x the keyframe duration, so it
+               * is halved to match the original [0,-6,0] timing (6/7.5/9s).
+               * Reduced-motion is neutralized by the global rule in globals.css. */
+              animation: `cardDrift ${(6 + (i % 3) * 1.5) / 2}s ${
+                i * 0.35
+              }s ease-in-out infinite alternate`,
             }}
           >
             <div className="flex items-center gap-3">
@@ -200,7 +197,7 @@ export default function Hero() {
                 </span>
               ))}
             </div>
-          </motion.div>
+          </div>
         ))}
       </motion.div>
 
@@ -211,7 +208,14 @@ export default function Hero() {
         transition={{ delay: 1.6, duration: 1.2 }}
         className="mt-14 flex flex-col items-center gap-2"
       >
-        <div className="scroll-hint-line w-px" style={{ height: 24, background: "rgba(186,215,247,0.4)" }} />
+        {/* Fixed-height box: the line's height pulse (12↔20px) is contained
+            inside it, so it can never re-center the hero or move the label. */}
+        <div className="h-5 w-px">
+          <div
+            className="scroll-hint-line w-full"
+            style={{ background: "rgba(186,215,247,0.4)" }}
+          />
+        </div>
         <span className="eyebrow !text-[9px] !tracking-[0.4em] text-fog-veil/70">
           scroll
         </span>

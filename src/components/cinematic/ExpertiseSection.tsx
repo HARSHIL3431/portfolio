@@ -98,7 +98,7 @@ export default function ExpertiseSection() {
                   ? undefined
                   : { opacity: 1, y: 0 }
               }
-              viewport={{ once: false, margin: "-15%" }}
+              viewport={{ once: true, margin: "-15%" }}
               transition={{
                 duration: 0.7,
                 delay: shouldReduceMotion ? 0 : index * 0.08,
