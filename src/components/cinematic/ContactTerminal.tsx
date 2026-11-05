@@ -106,7 +106,7 @@ export default function ContactTerminal() {
               <span className="eyebrow !text-[10px]">Email</span>
               <a
                 href="mailto:harshilthakkar3435@gmail.com"
-                className="font-mono text-sm tracking-wide text-frost-glow/75 transition-colors duration-300 hover:text-ice-highlight"
+                className="cursor-target font-mono text-sm tracking-wide text-frost-glow/75 transition-colors duration-300 hover:text-ice-highlight"
               >
                 harshilthakkar3435@gmail.com
               </a>
@@ -132,7 +132,7 @@ export default function ContactTerminal() {
                       : undefined
                   }
                   download={href.endsWith(".pdf") ? true : undefined}
-                  className="chip hover:!text-ice-highlight"
+                  className="chip cursor-target hover:!text-ice-highlight"
                 >
                   {label} ↗
                 </a>
@@ -263,7 +263,8 @@ export default function ContactTerminal() {
                 <button
                   id="contact-submit"
                   type="submit"
-                  className="btn btn-violet w-full !py-4"
+                  className="btn btn-violet cursor-target w-full !py-4"
+                  data-cursor-label="Send"
                 >
                   Send Message →
                 </button>

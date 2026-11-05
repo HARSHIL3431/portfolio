@@ -1,7 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
-
 export const alt = "Harshil Thakkar — AI/ML Engineer";
 export const size = {
   width: 1200,
@@ -44,7 +42,7 @@ export default function OpengraphImage() {
             right: 0,
             height: "45%",
             background:
-              "conic-gradient(at 50% -5%, transparent 45%, rgba(124,145,182,0.16) 49%, rgba(124,145,182,0.28) 50%, rgba(124,145,182,0.16) 51%, transparent 55%)",
+              "radial-gradient(ellipse 40% 100% at 50% 0%, rgba(124,145,182,0.28) 0%, rgba(124,145,182,0.16) 45%, transparent 85%)",
           }}
         />
         {/* Content */}

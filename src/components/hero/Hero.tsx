@@ -143,7 +143,8 @@ export default function Hero() {
             e.preventDefault();
             scrollToId("#projects", lenis);
           }}
-          className="btn btn-primary w-full sm:w-auto"
+          className="btn btn-primary cursor-target w-full sm:w-auto"
+          data-cursor-label="Explore"
         >
           View Projects →
         </a>
@@ -153,7 +154,7 @@ export default function Hero() {
           rel="noopener noreferrer"
           download
           aria-label="Download Resume PDF"
-          className="btn btn-outline w-full sm:w-auto"
+          className="btn btn-outline cursor-target w-full sm:w-auto"
         >
           Resume ↗
         </a>
