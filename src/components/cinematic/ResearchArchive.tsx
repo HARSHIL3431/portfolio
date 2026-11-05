@@ -67,7 +67,7 @@ function ProjectFilters({
             aria-pressed={isActive}
             onClick={() => onChange(value)}
             className={cn(
-              "rounded-full px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-300",
+              "cursor-target rounded-full px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-300",
               isActive
                 ? "text-pure-white"
                 : "text-moon-mist/70 hover:text-ice-highlight"
@@ -219,7 +219,8 @@ function ProjectCard({
   return (
     <article
       onClick={() => onOpen(project)}
-      className="project-card glass-card hairline group relative flex h-full cursor-pointer flex-col overflow-hidden"
+      className="project-card glass-card hairline cursor-target group relative flex h-full cursor-pointer flex-col overflow-hidden"
+      data-cursor-label="View"
       style={{ "--card-accent": project.accentColor.line } as React.CSSProperties}
     >
       {/* Featured accent hairline */}
@@ -323,7 +324,7 @@ function ProjectCard({
               rel="noopener noreferrer"
               aria-label={`${project.title} GitHub repository`}
               onClick={(e) => e.stopPropagation()}
-              className="font-mono text-[10px] uppercase tracking-[0.12em] text-frost-glow/70 transition-colors duration-250 hover:text-ice-highlight"
+              className="cursor-target font-mono text-[10px] uppercase tracking-[0.12em] text-frost-glow/70 transition-colors duration-250 hover:text-ice-highlight"
             >
               GitHub ↗
             </a>
@@ -335,7 +336,7 @@ function ProjectCard({
               rel="noopener noreferrer"
               aria-label={`${project.title} live demo`}
               onClick={(e) => e.stopPropagation()}
-              className="font-mono text-[10px] uppercase tracking-[0.12em] text-frost-glow/70 transition-colors duration-250 hover:text-ice-highlight"
+              className="cursor-target font-mono text-[10px] uppercase tracking-[0.12em] text-frost-glow/70 transition-colors duration-250 hover:text-ice-highlight"
             >
               Demo ↗
             </a>
@@ -347,7 +348,7 @@ function ProjectCard({
               e.stopPropagation();
               onOpen(project);
             }}
-            className="ml-auto inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-250"
+            className="cursor-target ml-auto inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-250"
             style={{ color: accent }}
           >
             Details
@@ -448,7 +449,7 @@ function ProjectDetailModal({
           type="button"
           aria-label="Close project details"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full font-mono text-sm text-moon-mist/70 transition-colors duration-250 hover:text-ice-highlight"
+          className="cursor-target absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full font-mono text-sm text-moon-mist/70 transition-colors duration-250 hover:text-ice-highlight"
           style={{
             background: "rgba(5,6,15,0.7)",
             boxShadow: "0 0 0 1px rgba(186,215,247,0.14) inset",
@@ -616,7 +617,7 @@ function ProjectDetailModal({
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-outline btn-sm"
+                  className="btn btn-outline btn-sm cursor-target"
                 >
                   GitHub ↗
                 </a>
@@ -626,7 +627,7 @@ function ProjectDetailModal({
                   href={project.demo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-violet btn-sm"
+                  className="btn btn-violet btn-sm cursor-target"
                 >
                   Live Demo →
                 </a>

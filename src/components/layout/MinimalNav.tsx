@@ -48,7 +48,7 @@ export default function MinimalNav() {
         <a
           href="#top"
           onClick={(e) => handleNavClick(e, "#top")}
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-3 group cursor-target"
         >
           <span className="block h-1.5 w-1.5 rounded-full bg-void-violet shadow-[0_0_8px_rgba(102,58,243,0.5)] transition-transform duration-300 group-hover:scale-125" />
           <span className="font-mono tracking-widest text-[10px] text-frost-glow/60 group-hover:text-frost-glow transition-colors duration-300">
@@ -64,7 +64,7 @@ export default function MinimalNav() {
               id={`nav-${label.toLowerCase()}`}
               href={href}
               onClick={(e) => handleNavClick(e, href)}
-              className="relative text-moon-mist/70 transition-colors duration-250 hover:text-ice-highlight focus-visible:text-ice-highlight group"
+              className="cursor-target relative text-moon-mist/70 transition-colors duration-250 hover:text-ice-highlight focus-visible:text-ice-highlight group"
             >
               {label}
               <span

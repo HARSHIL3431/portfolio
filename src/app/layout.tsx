@@ -5,7 +5,7 @@ import { LenisProvider } from "@/providers/LenisProvider";
 import { ScrollProvider } from "@/providers/ScrollProvider";
 import { DustParticles } from "@/components/atmospheric/DustParticles";
 import { BackgroundAtmosphere } from "@/components/atmospheric/BackgroundAtmosphere";
-import { CinematicCursor } from "@/components/interaction/CinematicCursor";
+import { TargetCursor } from "@/components/interaction/TargetCursor";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -95,7 +95,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased selection:bg-[rgba(186,215,247,0.16)] bg-midnight-canvas text-frost-glow relative overflow-x-hidden min-h-screen cursor-none">
+      {/* `cursor:none` is intentionally NOT set on <body>: TargetCursor
+          injects its own scoped `cursor: none` rule only while a fine-pointer
+          device is inside the window, so the native cursor is preserved on
+          touch devices, when the pointer leaves, and on unmount/reduced
+          motion. */}
+      <body className="antialiased selection:bg-[rgba(186,215,247,0.16)] bg-midnight-canvas text-frost-glow relative overflow-x-hidden min-h-screen">
         <noscript>
           <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
             <h1>Harshil Thakkar — AI/ML Engineer</h1>
@@ -112,8 +117,25 @@ export default function RootLayout({
         <BackgroundAtmosphere />
         <DustParticles />
 
-        {/* Cursor layer */}
-        <CinematicCursor />
+        {/* Cursor layer — single custom cursor instance */}
+        <TargetCursor
+          targetSelector=".cursor-target"
+          cursorColor="#d8ecf8"
+          cursorColorOnTarget="#d8ecf8"
+          spinDuration={2}
+          hoverDuration={0.2}
+          parallaxOn
+          hideDefaultCursor
+          size={36}
+          cornerSize={12}
+          thickness={2}
+          padding={6}
+          matchRadius
+          dotSize={4}
+          blendMode="difference"
+          showLabel
+          clickEffect
+        />
 
         {/* Content */}
         <LenisProvider>
